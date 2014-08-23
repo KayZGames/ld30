@@ -7,8 +7,16 @@ class Renderable extends Component {
 }
 
 class Transform extends Component {
-  double x, y;
-  Transform(num x, num y) : x = x.toDouble(), y = y.toDouble();
+  int x, y;
+  Transform(this.x, this.y);
 }
 
 class Camera extends Component {}
+
+class Spawner extends Component {
+  double spawnTime = 10000.0;
+  String type;
+  Spawner(this.type);
+}
+
+class Unit extends Component {}

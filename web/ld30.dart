@@ -16,15 +16,16 @@ class Game extends GameBase {
   }
 
   void createEntities() {
-    addEntity([new Transform(TILES_X / 2, TILES_Y - 1), new Renderable('gate_hell')]);
-    addEntity([new Transform(TILES_X / 2, 0), new Renderable('gate_heaven')]);
-    addEntity([new Transform(0, TILES_Y / 2), new Renderable('gate_fire')]);
-    addEntity([new Transform(TILES_X - 1, TILES_Y / 2), new Renderable('gate_ice')]);
+    addEntity([new Transform(TILES_X ~/ 2, TILES_Y - 1), new Renderable('gate_hell'), new Spawner('hell')]);
+    addEntity([new Transform(TILES_X ~/ 2, 0), new Renderable('gate_heaven'), new Spawner('heaven')]);
+    addEntity([new Transform(0, TILES_Y ~/ 2), new Renderable('gate_fire'), new Spawner('fire')]);
+    addEntity([new Transform(TILES_X - 1, TILES_Y ~/ 2), new Renderable('gate_ice'), new Spawner('ice')]);
     addEntity([new Transform(0, 0), new Camera()]);
   }
 
   List<EntitySystem> getSystems() {
     return [
+            new SpawningSystem(),
             new TweeningSystem(),
             new CanvasCleaningSystem(canvas),
             new CameraPositionSystem(),
@@ -34,5 +35,11 @@ class Game extends GameBase {
             new FpsRenderingSystem(ctx),
             new AnalyticsSystem(AnalyticsSystem.GITHUB, 'ld30')
     ];
+  }
+
+  @override
+  Future onInit() {
+    world.addManager(new UnitManager());
+    return super.onInit();
   }
 }

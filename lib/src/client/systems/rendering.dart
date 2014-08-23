@@ -16,7 +16,7 @@ class RenderingSystem extends EntityProcessingSystem {
     var r = rm.get(entity);
 
     var sprite = sheet.sprites[r.name];
-    ctx.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height, t.x * TILE_SIZE, t.y * TILE_SIZE, sprite.dst.width, sprite.dst.height);
+    ctx.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height, t.x * TILE_SIZE + sprite.offset.x + TILE_SIZE/2, t.y * TILE_SIZE + sprite.offset.y + TILE_SIZE/2, sprite.dst.width, sprite.dst.height);
   }
 }
 

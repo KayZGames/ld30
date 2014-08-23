@@ -87,6 +87,38 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
+},
+"peasant_fire":
+{
+	"frame": {"x":104,"y":2,"w":18,"h":24},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":4,"w":18,"h":24},
+	"sourceSize": {"w":32,"h":32}
+},
+"peasant_heaven":
+{
+	"frame": {"x":104,"y":2,"w":18,"h":24},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":4,"w":18,"h":24},
+	"sourceSize": {"w":32,"h":32}
+},
+"peasant_hell":
+{
+	"frame": {"x":104,"y":2,"w":18,"h":24},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":4,"w":18,"h":24},
+	"sourceSize": {"w":32,"h":32}
+},
+"peasant_ice":
+{
+	"frame": {"x":104,"y":2,"w":18,"h":24},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":4,"w":18,"h":24},
+	"sourceSize": {"w":32,"h":32}
 }},
 "meta": {
 	"app": "http://www.codeandweb.com/texturepacker ",
@@ -95,6 +127,6 @@
 	"format": "RGBA8888",
 	"size": {"w":128,"h":128},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:2db5cfb5ba93b25f61e01e8d343d9e43:fe1d7eecc522287f782d72cd14a5e1f7:a759b6bbc8381ac9c472b28f589ad0d6$"
+	"smartupdate": "$TexturePacker:SmartUpdate:6536e055e292cc8b112bdd600c887772:5cc7013f6ebbab1fda50c77fcae9d76b:a759b6bbc8381ac9c472b28f589ad0d6$"
 }
 }
