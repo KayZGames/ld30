@@ -24,6 +24,14 @@ class Unit extends Component {
   final int maxMoves;
   int movesLeft;
   Unit(this.alignment, int maxMoves) : maxMoves = maxMoves, movesLeft = maxMoves;
+
+  void nextTurn() {
+    movesLeft = maxMoves;
+  }
 }
 
 class Selected extends Component {}
+class Move extends Component {
+  int x, y;
+  Move(this.x, this.y);
+}

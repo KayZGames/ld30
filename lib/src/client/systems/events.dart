@@ -3,15 +3,31 @@ part of client;
 class InputHandlingSystem extends GenericInputHandlingSystem {
   final maxX = TILES_X * TILE_SIZE - 800;
   final maxY = TILES_Y * TILE_SIZE - 600;
+  Set<int> blockingKeys = new Set.from([KeyCode.N, KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.ENTER]);
+  Set<int> blockedKeys = new Set<int>();
   Map<int, Vector2> directions = {KeyCode.W: new Vector2(0.0, -1.0),
                                   KeyCode.S: new Vector2(0.0, 1.0),
                                   KeyCode.A: new Vector2(-1.0, 0.0),
                                   KeyCode.D: new Vector2(1.0, 0.0),
                                   };
   ComponentMapper<Transform> tm;
-  ComponentMapper<Unit> unitMapper;
   UnitManager um;
   InputHandlingSystem() : super(Aspect.getAspectForAllOf([Camera, Transform]));
+
+  @override
+  void handleInput(KeyboardEvent event, bool pressed) {
+    var keyCode = event.keyCode;
+    if (preventDefaultKeys.contains(keyCode)) {
+      event.preventDefault();
+    }
+    if (blockedKeys.contains(keyCode) && pressed) return;
+    keyState[keyCode] = pressed;
+    if (!pressed) {
+      blockedKeys.remove(keyCode);
+    } else if (blockingKeys.contains(keyCode)) {
+      blockedKeys.add(keyCode);
+    }
+  }
 
   @override
   void processEntity(Entity entity) {
@@ -36,10 +52,6 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
       // no selected Unit exists
     }
     if (keyState[KeyCode.N] == true) {
-      if (null != selectedUnit) {
-        selectedUnit..removeComponent(Selected)
-                    ..changedInWorld();
-      }
       try {
         var moveableUnit = um.getNextUnit(gameState.alignment);
         var unitTransform = tm.get(moveableUnit);
@@ -51,6 +63,7 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
       } on StateError catch (e) {
         // no moveable Unit exists
       }
+      keyState[KeyCode.N] = false;
     }
     if (null != selectedUnit) {
       if (keyState[KeyCode.W] == true) {
@@ -63,19 +76,18 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
         moveUnit(selectedUnit, KeyCode.D);
       }
     }
+    if (keyState[KeyCode.ENTER] == true) {
+      um.nextTurn();
+    }
     t.x = max(0, min(maxX, t.x));
     t.y = max(0, min(maxY, t.y));
   }
 
   void moveUnit(Entity entity, int keyCode) {
-    var unit = unitMapper.get(entity);
-    if (unit.movesLeft > 0) {
-      var selectedTransform = tm.get(entity);
-      var direction = directions[keyCode];
-      selectedTransform.x += direction.x.toInt();
-      selectedTransform.y += direction.y.toInt();
-      unitMapper.get(entity).movesLeft -= 1;
-      keyState[keyCode] = false;
-    }
+    var selectedTransform = tm.get(entity);
+    var direction = directions[keyCode];
+    entity..addComponent(new Move(direction.x.toInt(), direction.y.toInt()))
+          ..changedInWorld();
+    keyState[keyCode] = false;
   }
 }
