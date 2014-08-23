@@ -14,7 +14,7 @@ class SpawningSystem extends EntityProcessingSystem {
     if (s.spawnTime <= 0.0) {
       var t = tm.get(entity);
       if (um.isTileEmpty(t.x, t.y)) {
-        world.createAndAddEntity([new Transform(t.x, t.y), new Unit(), new Renderable('peasant_${s.type}')]);
+        world.createAndAddEntity([new Transform(t.x, t.y), new Unit(s.type, 10), new Renderable('peasant_${s.type}')]);
         s.spawnTime = 10000.0;
       }
     }

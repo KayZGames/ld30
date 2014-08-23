@@ -19,4 +19,11 @@ class Spawner extends Component {
   Spawner(this.type);
 }
 
-class Unit extends Component {}
+class Unit extends Component {
+  String alignment;
+  final int maxMoves;
+  int movesLeft;
+  Unit(this.alignment, int maxMoves) : maxMoves = maxMoves, movesLeft = maxMoves;
+}
+
+class Selected extends Component {}
