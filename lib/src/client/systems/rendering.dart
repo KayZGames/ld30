@@ -236,12 +236,14 @@ class FactionSelectionScreenRenderingSystem extends VoidEntitySystem {
   final factions = ['World of Angels', 'World of Demons', 'World of Fire', 'World of Ice'];
   int selection = 0;
 
-
   /// to prevent scrolling
   var preventDefaultKeys = new Set.from([KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.SPACE]);
   var keyState = <int, bool>{};
   var blockingKeys = new Set.from([KeyCode.UP, KeyCode.DOWN, KeyCode.ENTER]);
   var blockedKeys = new Set<int>();
+
+  TagManager tagManager;
+  ComponentMapper<Transform> tm;
 
   CanvasRenderingContext2D ctx;
 
@@ -279,6 +281,21 @@ class FactionSelectionScreenRenderingSystem extends VoidEntitySystem {
     if (keyState[KeyCode.ENTER] == true) {
       gameState.playerFaction = FACTIONS[selection];
       gameState.menu = false;
+      var camera = tagManager.getEntity('camera');
+      var cameraTransform = tm.get(camera);
+      if (selection == 0) {
+        cameraTransform.x = TILES_X * TILE_SIZE ~/ 2 - 400;
+        cameraTransform.y = 0;
+      } else if (selection == 1) {
+        cameraTransform.x = TILES_X * TILE_SIZE ~/ 2 - 400;
+        cameraTransform.y = TILES_Y * TILE_SIZE - 300;
+      } else if (selection == 2) {
+        cameraTransform.x = 0;
+        cameraTransform.y = TILES_Y * TILE_SIZE ~/ 2 - 300;
+      } else if (selection == 3) {
+        cameraTransform.x = TILES_X * TILE_SIZE - 800;
+        cameraTransform.y = TILES_Y * TILE_SIZE ~/ 2 - 300;
+      }
       return;
     }
     ctx..save()
