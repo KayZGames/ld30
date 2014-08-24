@@ -7,6 +7,7 @@ class MovementSystem extends EntityProcessingSystem {
   ComponentMapper<Move> mm;
 
   FogOfWarManager fowManager;
+  TagManager tagManager;
 
   MovementSystem() : super(Aspect.getAspectForAllOf([Transform, Move, Unit]).exclude([Attacker, Defender]));
 
@@ -28,6 +29,12 @@ class MovementSystem extends EntityProcessingSystem {
           unitManager.unitCoords[t.x][t.y] = entity;
           u.movesLeft -= 1;
           fowManager.uncoverTiles(entity);
+          if (gameState.currentFaction == gameState.playerFaction) {
+            var camera = tagManager.getEntity('camera');
+            var cameraTransform = tm.get(camera);
+            cameraTransform.x = t.x * TILE_SIZE - 400;
+            cameraTransform.y = t.y * TILE_SIZE - 300;
+          }
         } else {
           var otherUnit = um.get(targetEntity);
           if (otherUnit.faction != u.faction) {

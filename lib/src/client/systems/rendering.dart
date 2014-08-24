@@ -118,6 +118,9 @@ class SelectionRenderingSystem extends EntityProcessingSystem {
         t.x * TILE_SIZE + sprite.offset.x + TILE_SIZE/2, t.y * TILE_SIZE + sprite.offset.y + TILE_SIZE/2 - TILE_SIZE + 2 * sin(world.time / 100),
         sprite.dst.width, sprite.dst.height);
   }
+
+  @override
+  bool checkProcessing() => gameState.playerFaction == gameState.currentFaction;
 }
 
 class MinimapRenderingSystem extends EntityProcessingSystem {

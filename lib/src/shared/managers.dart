@@ -162,7 +162,7 @@ class FogOfWarManager extends Manager {
 
     for (int y = -u.viewRange; y <= u.viewRange; y++) {
       for (int x = -u.viewRange; x <= u.viewRange; x++) {
-        if (x.abs() + y.abs() <= u.viewRange && t.x + x > 0 && t.x + x < TILES_X && t.y + y > 0 && t.y + y < TILES_Y) {
+        if (x.abs() + y.abs() <= u.viewRange && t.x + x >= 0 && t.x + x < TILES_X && t.y + y >= 0 && t.y + y < TILES_Y) {
           tiles[u.faction][t.x + x][t.y + y] = true;
         }
       }
