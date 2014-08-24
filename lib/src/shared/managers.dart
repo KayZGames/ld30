@@ -11,7 +11,8 @@ class UnitManager extends Manager {
   Map<String, Bag<Entity>> factionUnits = {F_HELL: new Bag<Entity>(),
                                           F_HEAVEN: new Bag<Entity>(),
                                           F_FIRE: new Bag<Entity>(),
-                                          F_ICE: new Bag<Entity>()};
+                                          F_ICE: new Bag<Entity>(),
+                                          F_NEUTRAL: new Bag<Entity>()};
 
 
   @override
@@ -80,7 +81,9 @@ class SpawnerManager extends Manager {
   Map<String, Bag<Entity>> factionSpawner = {F_HELL: new Bag<Entity>(),
                                              F_HEAVEN: new Bag<Entity>(),
                                              F_FIRE: new Bag<Entity>(),
-                                             F_ICE: new Bag<Entity>()};
+                                             F_ICE: new Bag<Entity>(),
+                                             F_NEUTRAL: new Bag<Entity>(),
+                                             };
 
   @override
   void added(Entity entity) {
@@ -105,7 +108,9 @@ class SpawnerManager extends Manager {
       var coords = spawnArea.firstWhere((xy) => unitManager.isTileEmpty(t.x + xy[0], t.y + xy[1]), orElse: () => <int>[]);
       if (coords.isNotEmpty) {
         var unit = um.get(entity);
-        world.createAndAddEntity([new Transform(t.x + coords[0], t.y + coords[1]), new Unit(unit.faction, 10), new Renderable('peasant')]);
+        world.createAndAddEntity([new Transform(t.x + coords[0], t.y + coords[1]),
+                                  new Unit(unit.faction, 10, unit.level),
+                                  new Renderable('peasant')]);
         s.spawnTime = s.maxSpawnTime;
       }
     }
@@ -116,13 +121,26 @@ class SpawnerManager extends Manager {
 class TurnManager extends Manager {
   ComponentMapper<Unit> um;
   ComponentMapper<Spawner> sm;
+  ComponentMapper<Conquerable> cm;
   UnitManager unitManager;
   SpawnerManager spawnerManager;
 
   void nextTurn() {
     unitManager.factionUnits[gameState.currentFaction].where(isEntity).forEach((entity) => um.get(entity).nextTurn());
     spawnerManager.factionSpawner[gameState.currentFaction].where(isEntity).forEach((entity) => sm.get(entity).spawnTime--);
+
     gameState.nextFaction();
+
+    unitManager.factionUnits[gameState.currentFaction].where(isEntity).forEach(recoverConquarable);
     spawnerManager.factionSpawner[gameState.currentFaction].where(isEntity).forEach(spawnerManager.spawn);
+  }
+
+  void recoverConquarable(Entity entity) {
+    if (cm.has(entity)) {
+      var u = um.get(entity);
+      if (u.health < u.maxHealth) {
+        u.health = min(u.health + u.maxHealth * 0.2, u.maxHealth);
+      }
+    }
   }
 }

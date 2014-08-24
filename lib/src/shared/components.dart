@@ -15,20 +15,22 @@ class Transform extends Component {
 class Camera extends Component {}
 
 class Spawner extends Component {
-  int spawnTime = 0;
-  int maxSpawnTime = 2;
-  Spawner();
+  int spawnTime;
+  int maxSpawnTime;
+  Spawner(int maxSpawnTime) : maxSpawnTime = maxSpawnTime, spawnTime = maxSpawnTime;
+  Spawner.instant(int maxSpawnTime) : maxSpawnTime = maxSpawnTime, spawnTime = 0;
 }
 
 class Unit extends Component {
   String faction;
+  int level;
   final int maxMoves;
   int movesLeft;
   double offStrength = 2.0;
   double defStrength = 1.0;
   double maxHealth = 2.0;
   double health = 2.0;
-  Unit(this.faction, int maxMoves) : maxMoves = maxMoves, movesLeft = maxMoves;
+  Unit(this.faction, int maxMoves, this.level) : maxMoves = maxMoves, movesLeft = maxMoves;
 
   void nextTurn() {
     movesLeft = maxMoves;
@@ -52,4 +54,8 @@ class Defender extends Component {
   Defender(this.x, this.y);
 }
 
-class KilledInAction extends Component {}
+class Defeated extends Component {
+  String faction;
+  Defeated(this.faction);
+}
+class Conquerable extends Component {}

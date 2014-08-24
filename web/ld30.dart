@@ -5,7 +5,7 @@ import 'package:ld30/client.dart';
                              SelectionRenderingSystem,
                              AttackerSystem, DefenderSystem, MovementSystem,
                              KilledInActionSystem, UnitManager, UnitStatusRenderingSystem,
-                             SpawnerManager, TurnManager, AiSystem
+                             SpawnerManager, TurnManager, AiSystem, ConquerableUnitSystem
                             ])
 import 'dart:mirrors';
 
@@ -22,10 +22,11 @@ class Game extends GameBase {
   }
 
   void createEntities() {
-    addEntity([new Transform(TILES_X ~/ 2, TILES_Y - 1), new Renderable('gate'), new Spawner(), new Unit(F_HELL, 0)]);
-    addEntity([new Transform(TILES_X ~/ 2, 0), new Renderable('gate'), new Spawner(), new Unit(F_HEAVEN, 0)]);
-    addEntity([new Transform(0, TILES_Y ~/ 2), new Renderable('gate'), new Spawner(), new Unit(F_FIRE, 0)]);
-    addEntity([new Transform(TILES_X - 1, TILES_Y ~/ 2), new Renderable('gate'), new Spawner(), new Unit(F_ICE, 0)]);
+    addEntity([new Transform(TILES_X ~/ 2, TILES_Y - 1), new Renderable('gate'), new Spawner.instant(2), new Unit(F_HELL, 0, 0)]);
+    addEntity([new Transform(TILES_X ~/ 2, 0), new Renderable('gate'), new Spawner.instant(2), new Unit(F_HEAVEN, 0, 0)]);
+    addEntity([new Transform(0, TILES_Y ~/ 2), new Renderable('gate'), new Spawner.instant(2), new Unit(F_FIRE, 0, 0)]);
+    addEntity([new Transform(TILES_X - 1, TILES_Y ~/ 2), new Renderable('gate'), new Spawner.instant(2), new Unit(F_ICE, 0, 0)]);
+    addEntity([new Transform(TILES_X ~/ 2, TILES_Y - 5), new Renderable('castle'), new Spawner(2), new Unit(F_NEUTRAL, 0, 0), new Conquerable()]);
     addEntity([new Transform(0, 0), new Camera()]);
   }
 
@@ -35,6 +36,7 @@ class Game extends GameBase {
             new MovementSystem(),
             new AttackerSystem(),
             new DefenderSystem(),
+            new ConquerableUnitSystem(),
 
             new InputHandlingSystem(),
             new AiSystem(),

@@ -76,10 +76,10 @@ class AttackerSystem extends EntityProcessingSystem {
         counter++;
       }
       if (enemyUnit.health < 0.0) {
-        enemyEntity..addComponent(new KilledInAction())
+        enemyEntity..addComponent(new Defeated(unit.faction))
                    ..changedInWorld();
       } else if (unit.health < 0.0) {
-        entity..addComponent(new KilledInAction())
+        entity..addComponent(new Defeated(unit.faction))
               ..changedInWorld();
       }
     } else {
@@ -116,11 +116,39 @@ class DefenderSystem extends EntityProcessingSystem {
 }
 
 class KilledInActionSystem extends EntityProcessingSystem {
-  KilledInActionSystem() : super(Aspect.getAspectForAllOf([KilledInAction]));
+  KilledInActionSystem() : super(Aspect.getAspectForAllOf([Defeated]).exclude([Conquerable]));
 
   @override
   void processEntity(Entity entity) {
     entity.deleteFromWorld();
+  }
+}
+
+class ConquerableUnitSystem extends EntityProcessingSystem {
+  ComponentMapper<Unit> um;
+  ComponentMapper<Defeated> dm;
+  ComponentMapper<Spawner> sm;
+
+  UnitManager unitManager;
+  SpawnerManager spawnerManager;
+
+  ConquerableUnitSystem() : super(Aspect.getAspectForAllOf([Unit, Conquerable, Defeated]));
+
+  @override
+  void processEntity(Entity entity) {
+    var d = dm.get(entity);
+    var u = um.get(entity);
+    var oldFaction = u.faction;
+    u.faction = d.faction;
+    entity..removeComponent(Defeated)
+          ..changedInWorld();
+
+    unitManager.factionUnits[oldFaction][entity.id] = null;
+    unitManager.factionUnits[u.faction][entity.id] = entity;
+    if (sm.has(entity)) {
+      spawnerManager.factionSpawner[oldFaction][entity.id] = null;
+      spawnerManager.factionSpawner[u.faction][entity.id] = entity;
+    }
   }
 }
 
@@ -149,4 +177,17 @@ class AiSystem extends VoidEntitySystem {
 
   @override
   bool checkProcessing() => gameState.currentFaction != gameState.playerFaction;
+}
+
+class ConquerableUnitRecoverySystem extends EntityProcessingSystem {
+  ComponentMapper<Unit> um;
+  ConquerableUnitRecoverySystem() : super(Aspect.getAspectForAllOf([Unit, Conquerable]));
+
+  @override
+  void processEntity(Entity entity) {
+    var u = um.get(entity);
+    if (u.health < u.maxHealth) {
+      u.health = min(u.health + u.maxHealth * 0.2, u.maxHealth);
+    }
+  }
 }
