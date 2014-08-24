@@ -137,7 +137,7 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
 
   @override
   void begin() {
-    ctx..fillStyle = 'black'
+    ctx..setFillColorRgb(50, 50, 50)
        ..fillRect(baseX, baseY, TILES_X * 2, TILES_Y * 2);
   }
 
@@ -161,7 +161,7 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
     if (u.faction == gameState.playerFaction) {
       ctx.setFillColorRgb(0, 255, 0);
     } else if (u.faction == 'neutral') {
-      ctx.setFillColorRgb(100, 100, 100);
+      ctx.setFillColorRgb(150, 150, 150);
     } else {
       ctx.setFillColorRgb(255, 0, 0);
     }
