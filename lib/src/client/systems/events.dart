@@ -3,8 +3,8 @@ part of client;
 class InputHandlingSystem extends GenericInputHandlingSystem {
   final maxX = TILES_X * TILE_SIZE - 800;
   final maxY = TILES_Y * TILE_SIZE - 600;
-  Set<int> blockingKeys = new Set.from([KeyCode.N, KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.ENTER]);
-  Set<int> blockedKeys = new Set<int>();
+  var blockingKeys = new Set.from([KeyCode.N, KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.ENTER]);
+  var blockedKeys = new Set<int>();
   Map<int, Vector2> directions = {KeyCode.W: new Vector2(0.0, -1.0),
                                   KeyCode.S: new Vector2(0.0, 1.0),
                                   KeyCode.A: new Vector2(-1.0, 0.0),
@@ -86,4 +86,7 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
           ..changedInWorld();
     keyState[keyCode] = false;
   }
+
+  @override
+  bool checkProcessing() => !gameState.menu;
 }

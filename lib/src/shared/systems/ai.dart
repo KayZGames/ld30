@@ -91,7 +91,7 @@ class AiSystem extends VoidEntitySystem {
   }
 
   @override
-  bool checkProcessing() => gameState.currentFaction != gameState.playerFaction;
+  bool checkProcessing() => gameState.currentFaction != gameState.playerFaction && !gameState.menu;
 }
 
 class TerrainTile extends Object with Node {

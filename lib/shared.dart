@@ -23,6 +23,7 @@ const F_NEUTRAL = 'neutral';
 const FACTIONS = const [F_HEAVEN, F_HELL, F_FIRE, F_ICE];
 
 class GameState {
+  bool menu = true;
   int _player = FACTIONS.length - 1;
   String playerFaction = F_HELL;
   String currentFaction = FACTIONS[FACTIONS.length - 1];
