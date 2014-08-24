@@ -142,6 +142,8 @@ class TurnManager extends Manager {
 
     unitManager.factionUnits[gameState.currentFaction].where(isEntity).forEach(recoverConquarable);
     spawnerManager.factionSpawner[gameState.currentFaction].where(isEntity).forEach(spawnerManager.spawn);
+
+    world.createAndAddEntity([new NextTurnInfo()]);
   }
 
   void recoverConquarable(Entity entity) {

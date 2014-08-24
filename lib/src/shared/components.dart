@@ -60,3 +60,7 @@ class Defeated extends Component {
   Defeated(this.faction);
 }
 class Conquerable extends Component {}
+
+class NextTurnInfo extends Component {
+  double timer = 1000.0;
+}

@@ -7,7 +7,8 @@ import 'package:ld30/client.dart';
                              KilledInActionSystem, UnitManager, UnitStatusRenderingSystem,
                              SpawnerManager, TurnManager, AiSystem, ConquerableUnitSystem,
                              MinimapRenderingSystem, FogOfWarRenderingSystem,
-                             FogOfWarManager, FactionSelectionScreenRenderingSystem
+                             FogOfWarManager, FactionSelectionScreenRenderingSystem,
+                             TurnMessageRenderingSystem
                             ])
 import 'dart:mirrors';
 
@@ -69,6 +70,7 @@ class Game extends GameBase {
             new SelectionRenderingSystem(buffer.context2D, spriteSheet),
             new BufferToCanvasRenderingSystem(ctx, buffer),
             new MinimapRenderingSystem(ctx),
+            new TurnMessageRenderingSystem(ctx),
             new FactionSelectionScreenRenderingSystem(ctx),
             new FpsRenderingSystem(ctx),
 
