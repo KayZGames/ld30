@@ -1,6 +1,7 @@
 library shared;
 
 import 'package:gamedev_helpers/gamedev_helpers_shared.dart';
+import 'package:a_star/a_star.dart';
 
 part 'src/shared/components.dart';
 

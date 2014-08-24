@@ -68,6 +68,13 @@ class UnitManager extends Manager {
 
   Entity getEntity(int x, int y) => unitCoords[x][y];
 
+  bool isFriendlyUnit(String faction, int x, int y) {
+    var entity = unitCoords[x][y];
+    if (null != entity) {
+      return um.get(entity).faction == faction;
+    }
+    return false;
+  }
 }
 
 class SpawnerManager extends Manager {

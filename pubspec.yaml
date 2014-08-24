@@ -1,12 +1,12 @@
 name: ld30
 description: A sample dartemis application
 dependencies:
+  a_star: any
   browser: any
   canvas_query: any
+  dart_to_js_script_rewriter: any
   gamedev_helpers:
     git: https://github.com/denniskaselow/gamedev_helpers
-#    path: ../gamedev_helpers
   hop: any
-  dart_to_js_script_rewriter: any
 transformers:
 - dart_to_js_script_rewriter

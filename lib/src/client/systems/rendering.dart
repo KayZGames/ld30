@@ -185,7 +185,8 @@ class FogOfWarRenderingSystem extends VoidEntitySystem {
   void initialize() {
     fogOfWarMini = new CanvasElement(width: TILES_X, height: TILES_Y);
     fogOfWarMini.context2D..fillStyle = 'black'
-                      ..fillRect(0, 0, TILES_X, TILES_Y);
+                          ..globalAlpha = 0.5
+                          ..fillRect(0, 0, TILES_X, TILES_Y);
     fogOfWar = new CanvasElement(width: TILES_X * TILE_SIZE, height: TILES_Y * TILE_SIZE);
     fogOfWar.context2D.drawImageScaled(fogOfWarMini, 0, 0, TILES_X * TILE_SIZE, TILES_Y * TILE_SIZE);
   }
