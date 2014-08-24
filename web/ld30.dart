@@ -72,7 +72,6 @@ class Game extends GameBase {
             new MinimapRenderingSystem(ctx),
             new TurnMessageRenderingSystem(ctx),
             new FactionSelectionScreenRenderingSystem(ctx),
-            new FpsRenderingSystem(ctx),
 
             new KilledInActionSystem(),
             new AnalyticsSystem(AnalyticsSystem.GITHUB, 'ld30')
