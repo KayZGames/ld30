@@ -117,7 +117,7 @@ class SpawnerManager extends Manager {
       if (coords.isNotEmpty) {
         var unit = um.get(entity);
         var spawnedEntity = world.createAndAddEntity([new Transform(t.x + coords[0], t.y + coords[1]),
-                                  new Unit(unit.faction, 10, unit.level),
+                                  new Unit(unit.faction, 5, unit.level, 2),
                                   new Renderable('peasant')]);
         s.spawnTime = s.maxSpawnTime;
         fowManager.uncoverTiles(spawnedEntity);

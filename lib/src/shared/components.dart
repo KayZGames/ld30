@@ -26,12 +26,12 @@ class Unit extends Component {
   int level;
   final int maxMoves;
   int movesLeft;
-  int viewRange = 2;
+  int viewRange;
   double offStrength = 2.0;
   double defStrength = 1.0;
   double maxHealth = 2.0;
   double health = 2.0;
-  Unit(this.faction, int maxMoves, this.level) : maxMoves = maxMoves, movesLeft = maxMoves;
+  Unit(this.faction, int maxMoves, this.level, this.viewRange) : maxMoves = maxMoves, movesLeft = maxMoves;
 
   void nextTurn() {
     movesLeft = maxMoves;

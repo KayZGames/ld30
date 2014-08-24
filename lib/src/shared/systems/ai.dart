@@ -39,7 +39,7 @@ class AiSystem extends VoidEntitySystem {
         targetPath[entity.id] = null;
         var visibleTiles = fowManager.tiles[faction];
         var visited = new Set<int>.from([t.y * TILES_X + t.x]);
-        target = getNextTarget(visibleTiles, t.x, t.y, visited);
+        target = getNextTarget(visibleTiles, t.x, t.y, new Queue<int>(), visited);
         targetTiles[entity.id] = target;
       }
       var path = null;
@@ -67,7 +67,7 @@ class AiSystem extends VoidEntitySystem {
     }
   }
 
-  int getNextTarget(List<List<bool>> visibleTiles, int x, int y, Set<int> visited) {
+  int getNextTarget(List<List<bool>> visibleTiles, int x, int y, Queue<int> unvisited, Set<int> visited) {
     if (visibleTiles[x][y] == true && !unitManager.isTileEmpty(x, y) && !unitManager.isFriendlyUnit(gameState.currentFaction, x, y)) {
       return y * TILES_X + x;
     } else if (visibleTiles[x][y] == false) {
@@ -79,15 +79,13 @@ class AiSystem extends VoidEntitySystem {
       var nextX = x + direction[0];
       var nextY = y + direction[1];
       var tile = nextY * TILES_X + nextX;
-      if (!visited.contains(tile) && nextX >= 0 && nextY >= 0 && nextX < TILES_X && nextY < TILES_Y) {
-        visited.add(tile);
-        target = getNextTarget(visibleTiles, nextX, nextY, visited);
-        if (null != target) {
-          return target;
-        }
+      if (!unvisited.contains(tile) && !visited.contains(tile) && nextX >= 0 && nextY >= 0 && nextX < TILES_X && nextY < TILES_Y) {
+        unvisited.add(tile);
       }
     }
-    return null;
+    target = unvisited.removeFirst();
+    visited.add(target);
+    return getNextTarget(visibleTiles, target % TILES_X, target ~/ TILES_X, unvisited, visited);
   }
 
   @override
