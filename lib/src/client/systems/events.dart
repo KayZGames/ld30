@@ -11,7 +11,7 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
                                   KeyCode.D: new Vector2(1.0, 0.0),
                                   };
   ComponentMapper<Transform> tm;
-  UnitManager um;
+  UnitManager unitManager;
   InputHandlingSystem() : super(Aspect.getAspectForAllOf([Camera, Transform]));
 
   @override
@@ -47,13 +47,13 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
     t.y += y;
     Entity selectedUnit;
     try {
-      selectedUnit = um.getSelectedUnit(gameState.alignment);
+      selectedUnit = unitManager.getSelectedUnit(gameState.faction);
     } on StateError catch (e) {
       // no selected Unit exists
     }
     if (keyState[KeyCode.N] == true) {
       try {
-        var moveableUnit = um.getNextUnit(gameState.alignment);
+        var moveableUnit = unitManager.getNextUnit(gameState.faction);
         var unitTransform = tm.get(moveableUnit);
         t.x = unitTransform.x * TILE_SIZE - 400;
         t.y = unitTransform.y * TILE_SIZE - 300;
@@ -77,7 +77,7 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
       }
     }
     if (keyState[KeyCode.ENTER] == true) {
-      um.nextTurn();
+      unitManager.nextTurn();
     }
     t.x = max(0, min(maxX, t.x));
     t.y = max(0, min(maxY, t.y));

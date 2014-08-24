@@ -9,14 +9,16 @@ class RenderingSystem extends EntityProcessingSystem {
   SpriteSheet sheet;
   RenderingSystem(this.ctx, this.sheet) : super(Aspect.getAspectForAllOf([Transform, Renderable]));
 
-
   @override
   void processEntity(Entity entity) {
     var t = tm.get(entity);
     var r = rm.get(entity);
 
     var sprite = sheet.sprites[r.name];
-    ctx.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height, t.x * TILE_SIZE + sprite.offset.x + TILE_SIZE/2, t.y * TILE_SIZE + sprite.offset.y + TILE_SIZE/2, sprite.dst.width, sprite.dst.height);
+    ctx.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height,
+        t.x * TILE_SIZE + sprite.offset.x + TILE_SIZE/2 + t.displacementX,
+        t.y * TILE_SIZE + sprite.offset.y + TILE_SIZE/2 + t.displacementY,
+        sprite.dst.width, sprite.dst.height);
   }
 }
 
@@ -71,7 +73,7 @@ class SelectionRenderingSystem extends EntityProcessingSystem {
   void processEntity(Entity entity) {
     var t = tm.get(entity);
 
-    var sprite = sheet.sprites['selected_${gameState.alignment}'];
+    var sprite = sheet.sprites['selected_${gameState.faction}'];
     ctx.drawImageScaledFromSource(sheet.image,
         sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height,
         t.x * TILE_SIZE + sprite.offset.x + TILE_SIZE/2, t.y * TILE_SIZE + sprite.offset.y + TILE_SIZE/2 - TILE_SIZE + 2 * sin(world.time / 100),

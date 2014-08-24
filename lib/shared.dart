@@ -18,7 +18,7 @@ const P_FIRE = 'fire';
 const P_ICE = 'ice';
 
 class GameState {
-  String alignment = 'hell';
+  String faction = 'hell';
 }
 
 final GameState gameState = new GameState();

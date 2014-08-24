@@ -8,6 +8,7 @@ class Renderable extends Component {
 
 class Transform extends Component {
   int x, y;
+  double displacementX = 0.0, displacementY = 0.0;
   Transform(this.x, this.y);
 }
 
@@ -20,10 +21,14 @@ class Spawner extends Component {
 }
 
 class Unit extends Component {
-  String alignment;
+  String faction;
   final int maxMoves;
   int movesLeft;
-  Unit(this.alignment, int maxMoves) : maxMoves = maxMoves, movesLeft = maxMoves;
+  double offStrength = 2.0;
+  double defStrength = 1.0;
+  double maxHealth = 2.0;
+  double health = 2.0;
+  Unit(this.faction, int maxMoves) : maxMoves = maxMoves, movesLeft = maxMoves;
 
   void nextTurn() {
     movesLeft = maxMoves;
@@ -35,3 +40,16 @@ class Move extends Component {
   int x, y;
   Move(this.x, this.y);
 }
+class Attacker extends Component {
+  int x, y;
+  double power = 1.0;
+  double duration = 100.0;
+  Attacker(this.x, this.y);
+}
+class Defender extends Component {
+  int x, y;
+  double duration = 100.0;
+  Defender(this.x, this.y);
+}
+
+class KilledInAction extends Component {}

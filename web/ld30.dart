@@ -2,7 +2,9 @@ import 'package:ld30/client.dart';
 
 @MirrorsUsed(targets: const [RenderingSystem, InputHandlingSystem,
                              TileRenderingSystem, BufferToCanvasRenderingSystem,
-                             SpawningSystem, SelectionRenderingSystem
+                             SpawningSystem, SelectionRenderingSystem,
+                             AttackerSystem, DefenderSystem, MovementSystem,
+                             KilledInActionSystem, UnitManager
                             ])
 import 'dart:mirrors';
 
@@ -23,19 +25,27 @@ class Game extends GameBase {
     addEntity([new Transform(TILES_X - 1, TILES_Y ~/ 2), new Renderable('gate_ice'), new Spawner('ice')]);
     addEntity([new Transform(0, 0), new Camera()]);
     addEntity([new Transform(32, 32), new Unit('hell', 10), new Renderable('peasant_hell')]);
+    addEntity([new Transform(33, 33), new Unit('heaven', 10), new Renderable('peasant_heaven')]);
   }
 
   List<EntitySystem> getSystems() {
     return [
-            new SpawningSystem(),
             new TweeningSystem(),
-            new CanvasCleaningSystem(canvas),
+            new SpawningSystem(),
+            new MovementSystem(),
+            new AttackerSystem(),
+            new DefenderSystem(),
+
             new InputHandlingSystem(),
+
+            new CanvasCleaningSystem(canvas),
             new TileRenderingSystem(buffer.context2D, spriteSheet),
             new RenderingSystem(buffer.context2D, spriteSheet),
             new SelectionRenderingSystem(buffer.context2D, spriteSheet),
             new BufferToCanvasRenderingSystem(ctx, buffer),
             new FpsRenderingSystem(ctx),
+
+            new KilledInActionSystem(),
             new AnalyticsSystem(AnalyticsSystem.GITHUB, 'ld30')
     ];
   }
