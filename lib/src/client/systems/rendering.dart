@@ -200,7 +200,6 @@ class FogOfWarRenderingSystem extends VoidEntitySystem {
   void initialize() {
     fogOfWarMini = new CanvasElement(width: TILES_X, height: TILES_Y);
     fogOfWarMini.context2D..fillStyle = 'black'
-                          ..globalAlpha = 0.5
                           ..fillRect(0, 0, TILES_X, TILES_Y);
     fogOfWar = new CanvasElement(width: TILES_X * TILE_SIZE, height: TILES_Y * TILE_SIZE);
     fogOfWar.context2D.drawImageScaled(fogOfWarMini, 0, 0, TILES_X * TILE_SIZE, TILES_Y * TILE_SIZE);
@@ -296,6 +295,7 @@ class FactionSelectionScreenRenderingSystem extends VoidEntitySystem {
         cameraTransform.x = TILES_X * TILE_SIZE - 800;
         cameraTransform.y = TILES_Y * TILE_SIZE ~/ 2 - 300;
       }
+      eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Faction selected', FACTIONS[selection]));
       return;
     }
     ctx..save()

@@ -165,6 +165,11 @@ class ConquerableUnitSystem extends EntityProcessingSystem {
       spawnerManager.factionSpawner[oldFaction][entity.id] = null;
       spawnerManager.factionSpawner[u.faction][entity.id] = entity;
     }
+    if (u.faction == gameState.playerFaction) {
+      eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Castle', 'conquered from $oldFaction'));
+    } else if (oldFaction == gameState.playerFaction) {
+      eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Castle', 'lost to ${u.faction}'));
+    }
   }
 }
 
