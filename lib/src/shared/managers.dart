@@ -39,7 +39,10 @@ class UnitManager extends Manager {
       if (u.movesLeft > 0) {
         var t = tm.get(entity);
         var m = mm.get(entity);
-        if (unitCoords[t.x + m.x][t.y + m.y] == null) {
+        var targetX = t.x + m.x;
+        var targetY = t.y + m.y;
+        if (targetX >= 0 && targetY >= 0 && targetX < TILES_X && targetY < TILES_Y
+            && unitCoords[targetX][targetY] == null) {
           unitCoords[t.x][t.y] = null;
           t.x += m.x;
           t.y += m.y;
