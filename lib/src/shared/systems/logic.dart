@@ -6,6 +6,8 @@ class MovementSystem extends EntityProcessingSystem {
   ComponentMapper<Transform> tm;
   ComponentMapper<Move> mm;
 
+  FogOfWarManager fowManager;
+
   MovementSystem() : super(Aspect.getAspectForAllOf([Transform, Move, Unit]).exclude([Attacker, Defender]));
 
 
@@ -25,6 +27,7 @@ class MovementSystem extends EntityProcessingSystem {
           t.y += m.y;
           unitManager.unitCoords[t.x][t.y] = entity;
           u.movesLeft -= 1;
+          fowManager.uncoverTiles(entity);
         } else {
           var otherUnit = um.get(targetEntity);
           if (otherUnit.faction != u.faction) {
@@ -131,6 +134,7 @@ class ConquerableUnitSystem extends EntityProcessingSystem {
 
   UnitManager unitManager;
   SpawnerManager spawnerManager;
+  FogOfWarManager fowManager;
 
   ConquerableUnitSystem() : super(Aspect.getAspectForAllOf([Unit, Conquerable, Defeated]));
 
@@ -143,6 +147,7 @@ class ConquerableUnitSystem extends EntityProcessingSystem {
     entity..removeComponent(Defeated)
           ..changedInWorld();
 
+    fowManager.uncoverTiles(entity);
     unitManager.factionUnits[oldFaction][entity.id] = null;
     unitManager.factionUnits[u.faction][entity.id] = entity;
     if (sm.has(entity)) {

@@ -26,6 +26,7 @@ class Unit extends Component {
   int level;
   final int maxMoves;
   int movesLeft;
+  int viewRange = 2;
   double offStrength = 2.0;
   double defStrength = 1.0;
   double maxHealth = 2.0;

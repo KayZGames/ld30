@@ -126,6 +126,7 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
   ComponentMapper<Unit> um;
   ComponentMapper<Transform> tm;
   TagManager tagManager;
+  FogOfWarRenderingSystem fowrs;
 
   CanvasRenderingContext2D ctx;
 
@@ -137,12 +138,22 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
        ..fillRect(baseX, baseY, TILES_X * 2, TILES_Y * 2);
   }
 
+  @override
+  void end() {
+    ctx.drawImageScaled(fowrs.fogOfWarMini, baseX, baseY, TILES_X * 2, TILES_Y * 2);
+
+    var camera = tagManager.getEntity('camera');
+    var cameraTransform = tm.get(camera);
+    ctx..setStrokeColorRgb(150, 150, 150)
+       ..lineWidth = 1
+       ..strokeRect(1+baseX + cameraTransform.x / TILE_SIZE * 2, 1+baseY + cameraTransform.y / TILE_SIZE * 2, 800 / TILE_SIZE * 2, 600 / TILE_SIZE * 2);
+  }
+
 
   @override
   void processEntity(Entity entity) {
     var t = tm.get(entity);
     var u = um.get(entity);
-    var camera = tagManager.getEntity('camera');
 
     if (u.faction == gameState.playerFaction) {
       ctx.setFillColorRgb(0, 255, 0);
@@ -152,10 +163,48 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
       ctx.setFillColorRgb(255, 0, 0);
     }
     ctx.fillRect(baseX + t.x * 2, baseY + t.y * 2, 2, 2);
+  }
+}
 
-    var cameraTransform = tm.get(camera);
-    ctx..setStrokeColorRgb(150, 150, 150)
-       ..lineWidth = 1
-       ..strokeRect(baseX + cameraTransform.x / TILE_SIZE * 2, baseY + cameraTransform.y / TILE_SIZE * 2, 800 / TILE_SIZE * 2, 600 / TILE_SIZE * 2);
+class FogOfWarRenderingSystem extends VoidEntitySystem {
+  FogOfWarManager fowManager;
+  TagManager tagManager;
+  ComponentMapper<Transform> tm;
+
+  CanvasRenderingContext2D ctx;
+  CanvasElement fogOfWar;
+  CanvasElement fogOfWarMini;
+
+
+  FogOfWarRenderingSystem(this.ctx);
+
+  @override
+  void initialize() {
+    fogOfWarMini = new CanvasElement(width: TILES_X, height: TILES_Y);
+    fogOfWarMini.context2D..fillStyle = 'black'
+                      ..fillRect(0, 0, TILES_X, TILES_Y);
+    fogOfWar = new CanvasElement(width: TILES_X * TILE_SIZE, height: TILES_Y * TILE_SIZE);
+    fogOfWar.context2D.drawImageScaled(fogOfWarMini, 0, 0, TILES_X * TILE_SIZE, TILES_Y * TILE_SIZE);
+  }
+
+  @override
+  void processSystem() {
+    if (fowManager.hasChanges) {
+      var tiles = fowManager.tiles[gameState.playerFaction];
+      for (int x = 0; x < tiles.length; x++) {
+        for (int y = 0; y < tiles[x].length; y++) {
+          if (tiles[x][y]) {
+            fogOfWarMini.context2D.clearRect(x, y, 1, 1);
+          }
+        }
+      }
+      fowManager.hasChanges = false;
+      fogOfWar.context2D..clearRect(0, 0, TILES_X * TILE_SIZE, TILES_Y * TILE_SIZE)
+                        ..drawImageScaled(fogOfWarMini, 0, 0, TILES_X * TILE_SIZE, TILES_Y * TILE_SIZE);
+    }
+    var camera = tagManager.getEntity('camera');
+    var t = tm.get(camera);
+
+    ctx.drawImageScaledFromSource(fogOfWar, t.x, t.y, 800, 600, t.x, t.y, 800, 600);
   }
 }

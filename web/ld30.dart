@@ -6,7 +6,8 @@ import 'package:ld30/client.dart';
                              AttackerSystem, DefenderSystem, MovementSystem,
                              KilledInActionSystem, UnitManager, UnitStatusRenderingSystem,
                              SpawnerManager, TurnManager, AiSystem, ConquerableUnitSystem,
-                             MinimapRenderingSystem
+                             MinimapRenderingSystem, FogOfWarRenderingSystem,
+                             FogOfWarManager
                             ])
 import 'dart:mirrors';
 
@@ -63,6 +64,7 @@ class Game extends GameBase {
             new TileRenderingSystem(buffer.context2D, spriteSheet),
             new UnitStatusRenderingSystem(buffer.context2D),
             new RenderingSystem(buffer.context2D, spriteSheet),
+            new FogOfWarRenderingSystem(buffer.context2D),
             new SelectionRenderingSystem(buffer.context2D, spriteSheet),
             new BufferToCanvasRenderingSystem(ctx, buffer),
             new MinimapRenderingSystem(ctx),
@@ -79,6 +81,7 @@ class Game extends GameBase {
     world.addManager(new SpawnerManager());
     world.addManager(new TurnManager());
     world.addManager(new TagManager());
+    world.addManager(new FogOfWarManager());
     return super.onInit();
   }
 }
