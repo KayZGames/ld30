@@ -15,9 +15,9 @@ class Transform extends Component {
 class Camera extends Component {}
 
 class Spawner extends Component {
-  double spawnTime = 10000.0;
-  String type;
-  Spawner(this.type);
+  int spawnTime = 0;
+  int maxSpawnTime = 2;
+  Spawner();
 }
 
 class Unit extends Component {

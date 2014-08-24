@@ -1,33 +1,12 @@
 part of shared;
 
-
-class SpawningSystem extends EntityProcessingSystem {
-  ComponentMapper<Transform> tm;
-  ComponentMapper<Spawner> sm;
-  UnitManager unitManager;
-  SpawningSystem() : super(Aspect.getAspectForAllOf([Transform, Spawner]));
-
-  @override
-  void processEntity(Entity entity) {
-    var s = sm.get(entity);
-    s.spawnTime -= world.delta;
-    if (s.spawnTime <= 0.0) {
-      var t = tm.get(entity);
-      if (unitManager.isTileEmpty(t.x, t.y)) {
-        world.createAndAddEntity([new Transform(t.x, t.y), new Unit(s.type, 10), new Renderable('peasant_${s.type}')]);
-        s.spawnTime = 10000.0;
-      }
-    }
-  }
-}
-
 class MovementSystem extends EntityProcessingSystem {
   UnitManager unitManager;
   ComponentMapper<Unit> um;
   ComponentMapper<Transform> tm;
   ComponentMapper<Move> mm;
 
-  MovementSystem() : super(Aspect.getAspectForAllOf([Transform, Move, Unit]));
+  MovementSystem() : super(Aspect.getAspectForAllOf([Transform, Move, Unit]).exclude([Attacker, Defender]));
 
 
   @override
@@ -60,6 +39,7 @@ class MovementSystem extends EntityProcessingSystem {
     entity..removeComponent(Move)
           ..changedInWorld();
   }
+
 }
 
 class AttackerSystem extends EntityProcessingSystem {
@@ -142,4 +122,31 @@ class KilledInActionSystem extends EntityProcessingSystem {
   void processEntity(Entity entity) {
     entity.deleteFromWorld();
   }
+}
+
+class AiSystem extends VoidEntitySystem {
+  final directions = <List<int>>[[1, 0], [-1, 0], [0, 1], [0, -1]];
+
+  UnitManager unitManager;
+  TurnManager turnManager;
+
+  ComponentMapper<Unit> um;
+
+  @override
+  void processSystem() {
+    var entity = unitManager.getSelectedUnit(gameState.currentFaction);
+    if (entity == null || um.get(entity).movesLeft <= 0) {
+      entity = unitManager.getNextUnit(gameState.currentFaction);
+    }
+    if (null == entity) {
+      turnManager.nextTurn();
+    } else {
+      var direction = directions[random.nextInt(directions.length)];
+      entity..addComponent(new Move(direction[0], direction[1]))
+            ..changedInWorld();
+    }
+  }
+
+  @override
+  bool checkProcessing() => gameState.currentFaction != gameState.playerFaction;
 }

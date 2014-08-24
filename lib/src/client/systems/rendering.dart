@@ -4,17 +4,19 @@ part of client;
 class RenderingSystem extends EntityProcessingSystem {
   ComponentMapper<Transform> tm;
   ComponentMapper<Renderable> rm;
+  ComponentMapper<Unit> um;
 
   CanvasRenderingContext2D ctx;
   SpriteSheet sheet;
-  RenderingSystem(this.ctx, this.sheet) : super(Aspect.getAspectForAllOf([Transform, Renderable]));
+  RenderingSystem(this.ctx, this.sheet) : super(Aspect.getAspectForAllOf([Transform, Renderable, Unit]));
 
   @override
   void processEntity(Entity entity) {
     var t = tm.get(entity);
     var r = rm.get(entity);
+    var u = um.get(entity);
 
-    var sprite = sheet.sprites[r.name];
+    var sprite = sheet.sprites['${r.name}_${u.faction}'];
     ctx.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height,
         t.x * TILE_SIZE + sprite.offset.x + TILE_SIZE/2 + t.displacementX,
         t.y * TILE_SIZE + sprite.offset.y + TILE_SIZE/2 + t.displacementY,
@@ -50,7 +52,7 @@ class UnitStatusRenderingSystem extends EntityProcessingSystem {
     ctx..setFillColorRgb((255 * (1-ratio)).toInt(), (255 * ratio).toInt(), (100 * ratio).toInt())
        ..fillRect(t.x * TILE_SIZE, t.y * TILE_SIZE, ratio * TILE_SIZE, 4)
        ..strokeRect(t.x * TILE_SIZE, t.y * TILE_SIZE, TILE_SIZE, 5);
-    if (u.faction == gameState.faction) {
+    if (u.faction == gameState.playerFaction && u.movesLeft > 0) {
       var moves = '${u.movesLeft}';
       var textWidth = ctx.measureText(moves).width;
       ctx..setFillColorRgb(0, 255, 255)
@@ -110,7 +112,7 @@ class SelectionRenderingSystem extends EntityProcessingSystem {
   void processEntity(Entity entity) {
     var t = tm.get(entity);
 
-    var sprite = sheet.sprites['selected_${gameState.faction}'];
+    var sprite = sheet.sprites['selected_${gameState.playerFaction}'];
     ctx.drawImageScaledFromSource(sheet.image,
         sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height,
         t.x * TILE_SIZE + sprite.offset.x + TILE_SIZE/2, t.y * TILE_SIZE + sprite.offset.y + TILE_SIZE/2 - TILE_SIZE + 2 * sin(world.time / 100),

@@ -2,9 +2,10 @@ import 'package:ld30/client.dart';
 
 @MirrorsUsed(targets: const [RenderingSystem, InputHandlingSystem,
                              TileRenderingSystem, BufferToCanvasRenderingSystem,
-                             SpawningSystem, SelectionRenderingSystem,
+                             SelectionRenderingSystem,
                              AttackerSystem, DefenderSystem, MovementSystem,
-                             KilledInActionSystem, UnitManager, UnitStatusRenderingSystem
+                             KilledInActionSystem, UnitManager, UnitStatusRenderingSystem,
+                             SpawnerManager, TurnManager, AiSystem
                             ])
 import 'dart:mirrors';
 
@@ -21,24 +22,22 @@ class Game extends GameBase {
   }
 
   void createEntities() {
-    addEntity([new Transform(TILES_X ~/ 2, TILES_Y - 1), new Renderable('gate_hell'), new Spawner('hell')]);
-    addEntity([new Transform(TILES_X ~/ 2, 0), new Renderable('gate_heaven'), new Spawner('heaven')]);
-    addEntity([new Transform(0, TILES_Y ~/ 2), new Renderable('gate_fire'), new Spawner('fire')]);
-    addEntity([new Transform(TILES_X - 1, TILES_Y ~/ 2), new Renderable('gate_ice'), new Spawner('ice')]);
+    addEntity([new Transform(TILES_X ~/ 2, TILES_Y - 1), new Renderable('gate'), new Spawner(), new Unit(F_HELL, 0)]);
+    addEntity([new Transform(TILES_X ~/ 2, 0), new Renderable('gate'), new Spawner(), new Unit(F_HEAVEN, 0)]);
+    addEntity([new Transform(0, TILES_Y ~/ 2), new Renderable('gate'), new Spawner(), new Unit(F_FIRE, 0)]);
+    addEntity([new Transform(TILES_X - 1, TILES_Y ~/ 2), new Renderable('gate'), new Spawner(), new Unit(F_ICE, 0)]);
     addEntity([new Transform(0, 0), new Camera()]);
-    addEntity([new Transform(32, 32), new Unit('hell', 10), new Renderable('peasant_hell')]);
-    addEntity([new Transform(33, 33), new Unit('heaven', 10), new Renderable('peasant_heaven')]);
   }
 
   List<EntitySystem> getSystems() {
     return [
             new TweeningSystem(),
-            new SpawningSystem(),
             new MovementSystem(),
             new AttackerSystem(),
             new DefenderSystem(),
 
             new InputHandlingSystem(),
+            new AiSystem(),
 
             new CanvasCleaningSystem(canvas),
             new TileRenderingSystem(buffer.context2D, spriteSheet),
@@ -56,6 +55,8 @@ class Game extends GameBase {
   @override
   Future onInit() {
     world.addManager(new UnitManager());
+    world.addManager(new SpawnerManager());
+    world.addManager(new TurnManager());
     return super.onInit();
   }
 }

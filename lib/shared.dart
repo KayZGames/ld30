@@ -12,13 +12,20 @@ const TILES_X = 64;
 const TILES_Y = 64;
 const TILE_SIZE = 32;
 
-const P_HEAVEN = 'heaven';
-const P_HELL = 'hell';
-const P_FIRE = 'fire';
-const P_ICE = 'ice';
+const F_HEAVEN = 'heaven';
+const F_HELL = 'hell';
+const F_FIRE = 'fire';
+const F_ICE = 'ice';
+const FACTIONS = const [F_HEAVEN, F_HELL, F_FIRE, F_ICE];
 
 class GameState {
-  String faction = 'hell';
+  int _player = FACTIONS.length - 1;
+  String playerFaction = F_HELL;
+  String currentFaction = FACTIONS[FACTIONS.length - 1];
+
+  void nextFaction() {
+    currentFaction = FACTIONS[_player++ % FACTIONS.length];
+  }
 }
 
 final GameState gameState = new GameState();

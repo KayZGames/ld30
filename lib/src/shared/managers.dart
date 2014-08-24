@@ -1,15 +1,17 @@
 part of shared;
 
+bool isEntity(Entity entity) => entity != null;
+
 class UnitManager extends Manager {
   ComponentMapper<Unit> um;
   ComponentMapper<Selected> sm;
   ComponentMapper<Transform> tm;
   ComponentMapper<Move> mm;
   List<List<Entity>> unitCoords = new List.generate(TILES_X, (_) => new List(TILES_Y));
-  Map<String, Bag<Entity>> playerUnits = {P_HELL: new Bag<Entity>(),
-                                          P_HEAVEN: new Bag<Entity>(),
-                                          P_FIRE: new Bag<Entity>(),
-                                          P_ICE: new Bag<Entity>()};
+  Map<String, Bag<Entity>> factionUnits = {F_HELL: new Bag<Entity>(),
+                                          F_HEAVEN: new Bag<Entity>(),
+                                          F_FIRE: new Bag<Entity>(),
+                                          F_ICE: new Bag<Entity>()};
 
 
   @override
@@ -18,7 +20,7 @@ class UnitManager extends Manager {
       var t = tm.get(entity);
       var u = um.get(entity);
       unitCoords[t.x][t.y] = entity;
-      playerUnits[u.faction][entity.id] = entity;
+      factionUnits[u.faction][entity.id] = entity;
     }
   }
 
@@ -28,7 +30,7 @@ class UnitManager extends Manager {
       var t = tm.get(entity);
       var u = um.get(entity);
       unitCoords[t.x][t.y] = null;
-      playerUnits[u.faction][entity.id] = null;
+      factionUnits[u.faction][entity.id] = null;
     }
   }
 
@@ -39,34 +41,88 @@ class UnitManager extends Manager {
     }
   }
 
-  bool isTileEmpty(int x, int y) => unitCoords[x][y] == null;
+  bool isTileEmpty(int x, int y) {
+    if (x < 0 || y < 0 || x >= TILES_X || y >= TILES_Y) return false;
+    return unitCoords[x][y] == null;
+  }
 
   Entity getNextUnit(String faction) {
-    Entity selected;
-    try {
-      selected = getSelectedUnit(faction);
-    } on StateError catch (_) {
-      return playerUnits[faction].where(isEntity).firstWhere(canMove);
+    Entity selected = getSelectedUnit(faction);
+    if (null == selected) {
+      return factionUnits[faction].where(isEntity).firstWhere(canMove, orElse: () => null);
     }
     selected..removeComponent(Selected)
             ..changedInWorld();
-    return playerUnits[faction].where(isEntity)
+    return factionUnits[faction].where(isEntity)
         .skipWhile((entity) => entity != selected)
         .firstWhere((entity) => entity != selected && canMove(entity),
-          orElse: () => playerUnits[faction].where(isEntity).firstWhere(canMove));
+          orElse: () => factionUnits[faction].where(isEntity).firstWhere(canMove, orElse: () => selected));
   }
 
-  bool isEntity(Entity entity) => entity != null;
   bool canMove(Entity entity) => um.get(entity).movesLeft > 0;
 
 
   Entity getSelectedUnit(String faction) =>
-    playerUnits[faction].where(isEntity).firstWhere((entity) => sm.has(entity));
-
-  void nextTurn() {
-    playerUnits.forEach((_, entities) => entities.where(isEntity).forEach((entity) => um.get(entity).nextTurn()));
-  }
+    factionUnits[faction].where(isEntity).firstWhere((entity) => sm.has(entity), orElse: () => null);
 
   Entity getEntity(int x, int y) => unitCoords[x][y];
 
+}
+
+class SpawnerManager extends Manager {
+  ComponentMapper<Transform> tm;
+  ComponentMapper<Spawner> sm;
+  ComponentMapper<Unit> um;
+  UnitManager unitManager;
+
+  final spawnArea = <List<int>>[[0, -1], [1, -1], [-1, -1], [-1, 0], [1, 0], [0, 1], [1, 1], [-1, 1]];
+
+  Map<String, Bag<Entity>> factionSpawner = {F_HELL: new Bag<Entity>(),
+                                             F_HEAVEN: new Bag<Entity>(),
+                                             F_FIRE: new Bag<Entity>(),
+                                             F_ICE: new Bag<Entity>()};
+
+  @override
+  void added(Entity entity) {
+    if (sm.has(entity)) {
+      var u = um.get(entity);
+      factionSpawner[u.faction][entity.id] = entity;
+    }
+  }
+
+  @override
+  void deleted(Entity entity) {
+    if (sm.has(entity)) {
+      var u = um.get(entity);
+      factionSpawner[u.faction][entity.id] = null;
+    }
+  }
+
+  void spawn(Entity entity) {
+    var s = sm.get(entity);
+    if (s.spawnTime <= 0) {
+      var t = tm.get(entity);
+      var coords = spawnArea.firstWhere((xy) => unitManager.isTileEmpty(t.x + xy[0], t.y + xy[1]), orElse: () => <int>[]);
+      if (coords.isNotEmpty) {
+        var unit = um.get(entity);
+        world.createAndAddEntity([new Transform(t.x + coords[0], t.y + coords[1]), new Unit(unit.faction, 10), new Renderable('peasant')]);
+        s.spawnTime = s.maxSpawnTime;
+      }
+    }
+  }
+}
+
+
+class TurnManager extends Manager {
+  ComponentMapper<Unit> um;
+  ComponentMapper<Spawner> sm;
+  UnitManager unitManager;
+  SpawnerManager spawnerManager;
+
+  void nextTurn() {
+    unitManager.factionUnits[gameState.currentFaction].where(isEntity).forEach((entity) => um.get(entity).nextTurn());
+    spawnerManager.factionSpawner[gameState.currentFaction].where(isEntity).forEach((entity) => sm.get(entity).spawnTime--);
+    gameState.nextFaction();
+    spawnerManager.factionSpawner[gameState.currentFaction].where(isEntity).forEach(spawnerManager.spawn);
+  }
 }

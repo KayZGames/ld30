@@ -12,6 +12,7 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
                                   };
   ComponentMapper<Transform> tm;
   UnitManager unitManager;
+  TurnManager turnManager;
   InputHandlingSystem() : super(Aspect.getAspectForAllOf([Camera, Transform]));
 
   @override
@@ -45,39 +46,34 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
     var t = tm.get(entity);
     t.x += x;
     t.y += y;
-    Entity selectedUnit;
-    try {
-      selectedUnit = unitManager.getSelectedUnit(gameState.faction);
-    } on StateError catch (e) {
-      // no selected Unit exists
-    }
-    if (keyState[KeyCode.N] == true) {
-      try {
-        var moveableUnit = unitManager.getNextUnit(gameState.faction);
-        var unitTransform = tm.get(moveableUnit);
-        t.x = unitTransform.x * TILE_SIZE - 400;
-        t.y = unitTransform.y * TILE_SIZE - 300;
-        moveableUnit..addComponent(new Selected())
-                    ..changedInWorld();
+    if (gameState.currentFaction == gameState.playerFaction) {
+      if (keyState[KeyCode.N] == true) {
+        var moveableUnit = unitManager.getNextUnit(gameState.playerFaction);
+        if (null != moveableUnit) {
+          var unitTransform = tm.get(moveableUnit);
+          t.x = unitTransform.x * TILE_SIZE - 400;
+          t.y = unitTransform.y * TILE_SIZE - 300;
+          moveableUnit..addComponent(new Selected())
+                      ..changedInWorld();
 
-      } on StateError catch (e) {
-        // no moveable Unit exists
+          keyState[KeyCode.N] = false;
+        }
       }
-      keyState[KeyCode.N] = false;
-    }
-    if (null != selectedUnit) {
-      if (keyState[KeyCode.W] == true) {
-        moveUnit(selectedUnit, KeyCode.W);
-      } else if (keyState[KeyCode.S] == true) {
-        moveUnit(selectedUnit, KeyCode.S);
-      } else if (keyState[KeyCode.A] == true) {
-        moveUnit(selectedUnit, KeyCode.A);
-      } else if (keyState[KeyCode.D] == true) {
-        moveUnit(selectedUnit, KeyCode.D);
+      Entity selectedUnit = unitManager.getSelectedUnit(gameState.playerFaction);
+      if (null != selectedUnit) {
+        if (keyState[KeyCode.W] == true) {
+          moveUnit(selectedUnit, KeyCode.W);
+        } else if (keyState[KeyCode.S] == true) {
+          moveUnit(selectedUnit, KeyCode.S);
+        } else if (keyState[KeyCode.A] == true) {
+          moveUnit(selectedUnit, KeyCode.A);
+        } else if (keyState[KeyCode.D] == true) {
+          moveUnit(selectedUnit, KeyCode.D);
+        }
       }
-    }
-    if (keyState[KeyCode.ENTER] == true) {
-      unitManager.nextTurn();
+      if (keyState[KeyCode.ENTER] == true) {
+        turnManager.nextTurn();
+      }
     }
     t.x = max(0, min(maxX, t.x));
     t.y = max(0, min(maxY, t.y));
