@@ -84,4 +84,12 @@ class Game extends GameBase {
     world.addManager(new FogOfWarManager());
     return super.onInit();
   }
+
+  @override
+  Future onInitDone() {
+    world.processEntityChanges();
+    UnitManager unitManager = world.getManager(UnitManager);
+    FogOfWarManager fowManager = world.getManager(FogOfWarManager);
+    unitManager.factionUnits.forEach((_, entities) => entities.where((entity) => entity != null).forEach((entity) => fowManager.uncoverTiles(entity)));
+  }
 }

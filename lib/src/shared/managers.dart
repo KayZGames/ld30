@@ -82,6 +82,7 @@ class SpawnerManager extends Manager {
   ComponentMapper<Spawner> sm;
   ComponentMapper<Unit> um;
   UnitManager unitManager;
+  FogOfWarManager fowManager;
 
   final spawnArea = <List<int>>[[0, -1], [1, -1], [-1, -1], [-1, 0], [1, 0], [0, 1], [1, 1], [-1, 1]];
 
@@ -115,10 +116,11 @@ class SpawnerManager extends Manager {
       var coords = spawnArea.firstWhere((xy) => unitManager.isTileEmpty(t.x + xy[0], t.y + xy[1]), orElse: () => <int>[]);
       if (coords.isNotEmpty) {
         var unit = um.get(entity);
-        world.createAndAddEntity([new Transform(t.x + coords[0], t.y + coords[1]),
+        var spawnedEntity = world.createAndAddEntity([new Transform(t.x + coords[0], t.y + coords[1]),
                                   new Unit(unit.faction, 10, unit.level),
                                   new Renderable('peasant')]);
         s.spawnTime = s.maxSpawnTime;
+        fowManager.uncoverTiles(spawnedEntity);
       }
     }
   }
@@ -160,7 +162,8 @@ class FogOfWarManager extends Manager {
   Map<String, List<List<bool>>> tiles = {F_HELL: new List.generate(TILES_X, (_) => new List.generate(TILES_Y, (_) => false)),
                                          F_HEAVEN: new List.generate(TILES_X, (_) => new List.generate(TILES_Y, (_) => false)),
                                          F_FIRE: new List.generate(TILES_X, (_) => new List.generate(TILES_Y, (_) => false)),
-                                         F_ICE: new List.generate(TILES_X, (_) => new List.generate(TILES_Y, (_) => false))
+                                         F_ICE: new List.generate(TILES_X, (_) => new List.generate(TILES_Y, (_) => false)),
+                                         F_NEUTRAL: new List.generate(TILES_X, (_) => new List.generate(TILES_Y, (_) => false)),
                                         };
 
   void uncoverTiles(Entity entity) {
@@ -176,5 +179,4 @@ class FogOfWarManager extends Manager {
     }
     hasChanges = true;
   }
-
 }

@@ -11,11 +11,8 @@ class AiSystem extends VoidEntitySystem {
 
   ComponentMapper<Unit> um;
 
-  Map<String, Bag<int>> targetTiles = {F_HELL: new Bag<int>(),
-                                       F_HEAVEN: new Bag<int>(),
-                                       F_ICE: new Bag<int>(),
-                                       F_FIRE: new Bag<int>(),
-                                       };
+  Bag<int> targetTiles = new Bag<int>();
+  Bag<Queue<TerrainTile>> targetPath = new Bag<Queue<TerrainTile>>();
   TerrainMap terrainMap;
 
   @override
@@ -35,21 +32,31 @@ class AiSystem extends VoidEntitySystem {
     } else {
       var t = tm.get(entity);
       var target = null;
-      if (targetTiles[faction].isIndexWithinBounds(entity.id)) {
-        target = targetTiles[faction][entity.id];
+      if (targetTiles.isIndexWithinBounds(entity.id)) {
+        target = targetTiles[entity.id];
       }
       if (target == null || unitManager.isFriendlyUnit(faction, target % TILES_X, target ~/ TILES_X)) {
+        targetPath[entity.id] = null;
         var visibleTiles = fowManager.tiles[faction];
         var visited = new Set<int>.from([t.y * TILES_X + t.x]);
-        target = getNextHiddenTile(visibleTiles, t.x, t.y, visited);
-        targetTiles[faction][entity.id] = target;
+        target = getNextTarget(visibleTiles, t.x, t.y, visited);
+        targetTiles[entity.id] = target;
       }
-      terrainMap.reset();
-      var pathFinder = new AStar<TerrainTile>(terrainMap);
-      var path = pathFinder.findPathSync(terrainMap.nodes[t.y * TILES_X + t.x], terrainMap.nodes[target]);
-      if (path.length > 1) {
+      var path = null;
+      if (targetPath.isIndexWithinBounds(entity.id)) {
+        path = targetPath[entity.id];
+      }
+      if (null == path) {
+        terrainMap.reset();
+        var pathFinder = new AStar<TerrainTile>(terrainMap);
+        path = pathFinder.findPathSync(terrainMap.nodes[t.y * TILES_X + t.x], terrainMap.nodes[target]);
+        if (path.length > 1) {
+          path.removeFirst();
+          targetPath[entity.id] = path;
+        }
+      }
+      if (path.length > 0) {
         var tile = path.removeFirst();
-        tile = path.removeFirst();
         entity..addComponent(new Move(tile.x - t.x, tile.y - t.y))
               ..changedInWorld();
       } else {
@@ -60,8 +67,10 @@ class AiSystem extends VoidEntitySystem {
     }
   }
 
-  int getNextHiddenTile(List<List<bool>> visibleTiles, int x, int y, Set<int> visited) {
-    if (visibleTiles[x][y] == false) {
+  int getNextTarget(List<List<bool>> visibleTiles, int x, int y, Set<int> visited) {
+    if (visibleTiles[x][y] == true && !unitManager.isTileEmpty(x, y) && !unitManager.isFriendlyUnit(gameState.currentFaction, x, y)) {
+      return y * TILES_X + x;
+    } else if (visibleTiles[x][y] == false) {
       return y * TILES_X + x;
     }
     var target = null;
@@ -72,7 +81,7 @@ class AiSystem extends VoidEntitySystem {
       var tile = nextY * TILES_X + nextX;
       if (!visited.contains(tile) && nextX >= 0 && nextY >= 0 && nextX < TILES_X && nextY < TILES_Y) {
         visited.add(tile);
-        target = getNextHiddenTile(visibleTiles, nextX, nextY, visited);
+        target = getNextTarget(visibleTiles, nextX, nextY, visited);
         if (null != target) {
           return target;
         }
