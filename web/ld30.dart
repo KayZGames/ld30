@@ -5,7 +5,8 @@ import 'package:ld30/client.dart';
                              SelectionRenderingSystem,
                              AttackerSystem, DefenderSystem, MovementSystem,
                              KilledInActionSystem, UnitManager, UnitStatusRenderingSystem,
-                             SpawnerManager, TurnManager, AiSystem, ConquerableUnitSystem
+                             SpawnerManager, TurnManager, AiSystem, ConquerableUnitSystem,
+                             MinimapRenderingSystem
                             ])
 import 'dart:mirrors';
 
@@ -42,7 +43,9 @@ class Game extends GameBase {
         }
       }
     }
-    addEntity([new Transform(0, 0), new Camera()]);
+    TagManager tm = world.getManager(TagManager);
+    var camera = addEntity([new Transform(0, 0), new Camera()]);
+    tm.register(camera, 'camera');
   }
 
   List<EntitySystem> getSystems() {
@@ -62,6 +65,7 @@ class Game extends GameBase {
             new RenderingSystem(buffer.context2D, spriteSheet),
             new SelectionRenderingSystem(buffer.context2D, spriteSheet),
             new BufferToCanvasRenderingSystem(ctx, buffer),
+            new MinimapRenderingSystem(ctx),
             new FpsRenderingSystem(ctx),
 
             new KilledInActionSystem(),
@@ -74,6 +78,7 @@ class Game extends GameBase {
     world.addManager(new UnitManager());
     world.addManager(new SpawnerManager());
     world.addManager(new TurnManager());
+    world.addManager(new TagManager());
     return super.onInit();
   }
 }

@@ -119,3 +119,43 @@ class SelectionRenderingSystem extends EntityProcessingSystem {
         sprite.dst.width, sprite.dst.height);
   }
 }
+
+class MinimapRenderingSystem extends EntityProcessingSystem {
+  final baseX = 800 - TILES_X * 2;
+  final baseY = 600 - TILES_Y * 2;
+  ComponentMapper<Unit> um;
+  ComponentMapper<Transform> tm;
+  TagManager tagManager;
+
+  CanvasRenderingContext2D ctx;
+
+  MinimapRenderingSystem(this.ctx) : super(Aspect.getAspectForAllOf([Unit, Transform]));
+
+  @override
+  void begin() {
+    ctx..fillStyle = 'black'
+       ..fillRect(baseX, baseY, TILES_X * 2, TILES_Y * 2);
+  }
+
+
+  @override
+  void processEntity(Entity entity) {
+    var t = tm.get(entity);
+    var u = um.get(entity);
+    var camera = tagManager.getEntity('camera');
+
+    if (u.faction == gameState.playerFaction) {
+      ctx.setFillColorRgb(0, 255, 0);
+    } else if (u.faction == 'neutral') {
+      ctx.setFillColorRgb(100, 100, 100);
+    } else {
+      ctx.setFillColorRgb(255, 0, 0);
+    }
+    ctx.fillRect(baseX + t.x * 2, baseY + t.y * 2, 2, 2);
+
+    var cameraTransform = tm.get(camera);
+    ctx..setStrokeColorRgb(150, 150, 150)
+       ..lineWidth = 1
+       ..strokeRect(baseX + cameraTransform.x / TILE_SIZE * 2, baseY + cameraTransform.y / TILE_SIZE * 2, 800 / TILE_SIZE * 2, 600 / TILE_SIZE * 2);
+  }
+}
