@@ -26,7 +26,22 @@ class Game extends GameBase {
     addEntity([new Transform(TILES_X ~/ 2, 0), new Renderable('gate'), new Spawner.instant(2), new Unit(F_HEAVEN, 0, 0)]);
     addEntity([new Transform(0, TILES_Y ~/ 2), new Renderable('gate'), new Spawner.instant(2), new Unit(F_FIRE, 0, 0)]);
     addEntity([new Transform(TILES_X - 1, TILES_Y ~/ 2), new Renderable('gate'), new Spawner.instant(2), new Unit(F_ICE, 0, 0)]);
-    addEntity([new Transform(TILES_X ~/ 2, TILES_Y - 5), new Renderable('castle'), new Spawner(2), new Unit(F_NEUTRAL, 0, 0), new Conquerable()]);
+
+    List<int> freeTiles = new List.generate(TILES_X * TILES_Y, (index) => index);
+    freeTiles.removeWhere((value) => value % TILES_Y < 3 || value % TILES_Y > TILES_X - 3 || value ~/ TILES_X < 3 || value ~/ TILES_X > TILES_Y - 3);
+    for (int i = 0; i < 40; i++) {
+      var pos = freeTiles[random.nextInt(freeTiles.length)];
+      var x = pos ~/ TILES_X;
+      var y = pos % TILES_Y;
+      if (freeTiles.contains(x * TILES_X + y)) {
+        addEntity([new Transform(x, y), new Renderable('castle'), new Spawner(2), new Unit(F_NEUTRAL, 0, 0), new Conquerable()]);
+        for (int deltaX = -4; deltaX < 5; deltaX++) {
+          for (int deltaY = -4; deltaY < 5; deltaY++) {
+            freeTiles.remove((x + deltaX) * TILES_X + y + deltaY);
+          }
+        }
+      }
+    }
     addEntity([new Transform(0, 0), new Camera()]);
   }
 
