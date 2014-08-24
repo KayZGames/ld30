@@ -4,7 +4,7 @@ import 'package:ld30/client.dart';
                              TileRenderingSystem, BufferToCanvasRenderingSystem,
                              SpawningSystem, SelectionRenderingSystem,
                              AttackerSystem, DefenderSystem, MovementSystem,
-                             KilledInActionSystem, UnitManager
+                             KilledInActionSystem, UnitManager, UnitStatusRenderingSystem
                             ])
 import 'dart:mirrors';
 
@@ -16,6 +16,8 @@ class Game extends GameBase {
   CanvasElement buffer;
   Game() : super('ld30', 'canvas', 800, 600, bodyDefsName: null) {
     buffer = new CanvasElement(width: TILES_X * TILE_SIZE, height: TILES_Y * TILE_SIZE);
+    buffer.context2D..textBaseline = "top"
+                    ..font = '12px Verdana';
   }
 
   void createEntities() {
@@ -40,6 +42,7 @@ class Game extends GameBase {
 
             new CanvasCleaningSystem(canvas),
             new TileRenderingSystem(buffer.context2D, spriteSheet),
+            new UnitStatusRenderingSystem(buffer.context2D),
             new RenderingSystem(buffer.context2D, spriteSheet),
             new SelectionRenderingSystem(buffer.context2D, spriteSheet),
             new BufferToCanvasRenderingSystem(ctx, buffer),
