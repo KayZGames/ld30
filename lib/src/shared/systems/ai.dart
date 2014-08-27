@@ -1,7 +1,7 @@
 part of shared;
 
 class AiSystem extends VoidEntitySystem {
-  final directions = <List<int>>[[1, 0], [-1, 0], [0, 1], [0, -1]];
+  final directions = <List<int>>[[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]];
 
   ComponentMapper<Transform> tm;
 
@@ -119,17 +119,38 @@ class TerrainMap implements Graph<TerrainTile> {
   @override
   Iterable<TerrainTile> getNeighboursOf(TerrainTile node) {
     List<TerrainTile> neighbours = new List();
+    // west
     if (node.x > 0) {
       neighbours.add(nodes[node.y * TILES_X + node.x - 1]);
     }
+    // east
     if (node.x < TILES_X - 1) {
       neighbours.add(nodes[node.y * TILES_X + node.x + 1]);
     }
+    // north
     if (node.y > 0) {
       neighbours.add(nodes[node.y * TILES_X + node.x - TILES_X]);
     }
+    // south
     if (node.y < TILES_Y - 1) {
       neighbours.add(nodes[node.y * TILES_X + node.x + TILES_X]);
+    }
+
+    // northwest
+    if (node.x > 0 && node.y > 0) {
+      neighbours.add(nodes[node.y * TILES_X + node.x - TILES_X - 1]);
+    }
+    // northeast
+    if (node.y > 0 && node.x < TILES_X - 1) {
+      neighbours.add(nodes[node.y * TILES_X + node.x - TILES_X + 1]);
+    }
+    // southwest
+    if (node.y < TILES_Y - 1 && node.x > 0) {
+      neighbours.add(nodes[node.y * TILES_X + node.x + TILES_X - 1]);
+    }
+    // southeast
+    if (node.x < TILES_X - 1 && node.y < TILES_Y - 1) {
+      neighbours.add(nodes[node.y * TILES_X + node.x + TILES_X + 1]);
     }
     return neighbours;
   }

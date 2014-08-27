@@ -5,11 +5,16 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
   final maxY = TILES_Y * TILE_SIZE - 600;
   var blockingKeys = new Set.from([KeyCode.N, KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.ENTER]);
   var blockedKeys = new Set<int>();
-  Map<int, Vector2> directions = {KeyCode.W: new Vector2(0.0, -1.0),
-                                  KeyCode.S: new Vector2(0.0, 1.0),
-                                  KeyCode.A: new Vector2(-1.0, 0.0),
-                                  KeyCode.D: new Vector2(1.0, 0.0),
-                                  };
+  Map<int, List<int>> directions = {
+                                    KeyCode.NUM_ONE:   [-1,  1],
+                                    KeyCode.NUM_TWO:   [ 0,  1],
+                                    KeyCode.NUM_THREE: [ 1,  1],
+                                    KeyCode.NUM_FOUR:  [-1,  0],
+                                    KeyCode.NUM_SIX:   [ 1,  0],
+                                    KeyCode.NUM_SEVEN: [-1, -1],
+                                    KeyCode.NUM_EIGHT: [ 0, -1],
+                                    KeyCode.NUM_NINE:  [ 1, -1],
+                                   };
   ComponentMapper<Transform> tm;
   UnitManager unitManager;
   TurnManager turnManager;
@@ -61,14 +66,22 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
       }
       Entity selectedUnit = unitManager.getSelectedUnit(gameState.playerFaction);
       if (null != selectedUnit) {
-        if (keyState[KeyCode.W] == true) {
-          moveUnit(selectedUnit, KeyCode.W);
-        } else if (keyState[KeyCode.S] == true) {
-          moveUnit(selectedUnit, KeyCode.S);
-        } else if (keyState[KeyCode.A] == true) {
-          moveUnit(selectedUnit, KeyCode.A);
-        } else if (keyState[KeyCode.D] == true) {
-          moveUnit(selectedUnit, KeyCode.D);
+        if (keyState[KeyCode.NUM_EIGHT] == true) {
+          moveUnit(selectedUnit, KeyCode.NUM_EIGHT);
+        } else if (keyState[KeyCode.NUM_TWO] == true) {
+          moveUnit(selectedUnit, KeyCode.NUM_TWO);
+        } else if (keyState[KeyCode.NUM_FOUR] == true) {
+          moveUnit(selectedUnit, KeyCode.NUM_FOUR);
+        } else if (keyState[KeyCode.NUM_SIX] == true) {
+          moveUnit(selectedUnit, KeyCode.NUM_SIX);
+        } else if (keyState[KeyCode.NUM_ONE] == true) {
+          moveUnit(selectedUnit, KeyCode.NUM_ONE);
+        } else if (keyState[KeyCode.NUM_THREE] == true) {
+          moveUnit(selectedUnit, KeyCode.NUM_THREE);
+        } else if (keyState[KeyCode.NUM_SEVEN] == true) {
+          moveUnit(selectedUnit, KeyCode.NUM_SEVEN);
+        } else if (keyState[KeyCode.NUM_NINE] == true) {
+          moveUnit(selectedUnit, KeyCode.NUM_NINE);
         }
       }
       if (keyState[KeyCode.ENTER] == true) {
@@ -82,7 +95,7 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
   void moveUnit(Entity entity, int keyCode) {
     var selectedTransform = tm.get(entity);
     var direction = directions[keyCode];
-    entity..addComponent(new Move(direction.x.toInt(), direction.y.toInt()))
+    entity..addComponent(new Move(direction[0], direction[1]))
           ..changedInWorld();
     keyState[keyCode] = false;
   }
