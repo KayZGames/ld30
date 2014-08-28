@@ -364,5 +364,6 @@ class TurnMessageRenderingSystem extends EntityProcessingSystem {
     } else if (gameState.currentFaction == F_FIRE) {
       return "IT'S GETTING HOT IN HERE";
     }
+    return '';
   }
 }
