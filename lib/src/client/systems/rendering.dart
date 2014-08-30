@@ -346,7 +346,7 @@ class TurnMessageRenderingSystem extends EntityProcessingSystem {
     String infoText = getInfoText();
     ctx..save()
        ..globalAlpha = info.timer / 1000.0
-       ..fillStyle = 'black'
+       ..fillStyle = 'grey'
        ..font = '20px Verdana'
        ..fillText(infoText, 400 - ctx.measureText(infoText).width / 2, 290)
        ..restore();
