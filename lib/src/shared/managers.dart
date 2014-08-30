@@ -116,9 +116,13 @@ class SpawnerManager extends Manager {
       var coords = spawnArea.firstWhere((xy) => unitManager.isTileEmpty(t.x + xy[0], t.y + xy[1]), orElse: () => <int>[]);
       if (coords.isNotEmpty) {
         var unit = um.get(entity);
-        var spawnedEntity = world.createAndAddEntity([new Transform(t.x + coords[0], t.y + coords[1]),
-                                  new Unit(unit.faction, 5, unit.level, 2),
-                                  new Renderable('peasant')]);
+        var components = [new Transform(t.x + coords[0], t.y + coords[1]),
+                          new Unit(unit.faction, 5, unit.level, 2),
+                          new Renderable('peasant')];
+        if (null == unitManager.getSelectedUnit(gameState.currentFaction)) {
+          components.add(new Selected());
+        }
+        var spawnedEntity = world.createAndAddEntity(components);
         s.spawnTime = s.maxSpawnTime;
         fowManager.uncoverTiles(spawnedEntity);
       }
