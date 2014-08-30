@@ -31,7 +31,9 @@ class Unit extends Component {
   double defStrength = 1.0;
   double maxHealth = 2.0;
   double health = 2.0;
-  Unit(this.faction, int maxMoves, this.level, this.viewRange) : maxMoves = maxMoves, movesLeft = maxMoves;
+  double influence;
+  double influenceWeight = 1.0;
+  Unit(this.faction, int maxMoves, this.level, this.viewRange, {this.influence: 5.0}) : maxMoves = maxMoves, movesLeft = maxMoves;
 
   void nextTurn() {
     movesLeft = maxMoves;
@@ -67,6 +69,8 @@ class NextTurnInfo extends Component {
 
 class Tile extends Component {
   String faction = F_NEUTRAL;
+  double influence = 1.0;
 }
 
-class Changed extends Component {}
+class Redraw extends Component {}
+

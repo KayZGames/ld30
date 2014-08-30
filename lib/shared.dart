@@ -11,9 +11,14 @@ part 'src/shared/systems/ai.dart';
 part 'src/shared/systems/logic.dart';
 part 'src/shared/managers.dart';
 
+typedef bool AddToQueueCondition(int tileId);
+typedef void AddToQueueAction(int tileId);
+
 const TILES_X = 64;
 const TILES_Y = 64;
 const TILE_SIZE = 64;
+const MAX_TILES = TILES_X * TILES_Y;
+const INFLUENCE_FACTOR = 0.95;
 
 const F_HEAVEN = 'heaven';
 const F_HELL = 'hell';

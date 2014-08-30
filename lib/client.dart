@@ -19,7 +19,9 @@ export 'package:gamedev_helpers/gamedev_helpers.dart';
                              SpawnerManager, TurnManager, AiSystem, ConquerableUnitSystem,
                              MinimapRenderingSystem, FogOfWarRenderingSystem,
                              FogOfWarManager, FactionSelectionScreenRenderingSystem,
-                             TurnMessageRenderingSystem, TileManager
+                             TurnMessageRenderingSystem, TileManager,
+
+                             DebugInfluenceRenderingSsystem
                             ])
 import 'dart:mirrors';
 
@@ -43,10 +45,10 @@ class Game extends GameBase {
     }
 
 
-    addEntity([new Transform(TILES_X ~/ 2, TILES_Y - 1), new Renderable('gate'), new Spawner.instant(3), new Unit(F_HELL, 0, 0, 4)]);
-    addEntity([new Transform(TILES_X ~/ 2, 0), new Renderable('gate'), new Spawner.instant(3), new Unit(F_HEAVEN, 0, 0, 4)]);
-    addEntity([new Transform(0, TILES_Y ~/ 2), new Renderable('gate'), new Spawner.instant(3), new Unit(F_FIRE, 0, 0, 4)]);
-    addEntity([new Transform(TILES_X - 1, TILES_Y ~/ 2), new Renderable('gate'), new Spawner.instant(3), new Unit(F_ICE, 0, 0, 4)]);
+    addEntity([new Transform(TILES_X ~/ 2, TILES_Y - 1), new Renderable('gate'), new Spawner.instant(3), new Unit(F_HELL, 0, 0, 4, influence: 20.0)]);
+    addEntity([new Transform(TILES_X ~/ 2, 0), new Renderable('gate'), new Spawner.instant(3), new Unit(F_HEAVEN, 0, 0, 4, influence: 20.0)]);
+    addEntity([new Transform(0, TILES_Y ~/ 2), new Renderable('gate'), new Spawner.instant(3), new Unit(F_FIRE, 0, 0, 4, influence: 20.0)]);
+    addEntity([new Transform(TILES_X - 1, TILES_Y ~/ 2), new Renderable('gate'), new Spawner.instant(3), new Unit(F_ICE, 0, 0, 4, influence: 20.0)]);
 
     List<int> freeTiles = new List.generate(TILES_X * TILES_Y, (index) => index);
     freeTiles.removeWhere((value) => value % TILES_Y < 3 || value % TILES_Y > TILES_X - 3 || value ~/ TILES_X < 3 || value ~/ TILES_X > TILES_Y - 3);
@@ -85,6 +87,7 @@ class Game extends GameBase {
             new UnitStatusRenderingSystem(buffer.context2D),
             new RenderingSystem(buffer.context2D, spriteSheet),
             new FogOfWarRenderingSystem(buffer.context2D),
+//            new DebugInfluenceRenderingSsystem(buffer.context2D),
             new SelectionRenderingSystem(buffer.context2D, spriteSheet),
             new BufferToCanvasRenderingSystem(ctx, buffer),
             new MinimapRenderingSystem(ctx),
@@ -112,7 +115,10 @@ class Game extends GameBase {
     world.processEntityChanges();
     UnitManager unitManager = world.getManager(UnitManager);
     FogOfWarManager fowManager = world.getManager(FogOfWarManager);
-    unitManager.factionUnits.forEach((_, entities) => entities.where((entity) => entity != null).forEach((entity) => fowManager.uncoverTiles(entity)));
+    unitManager.factionUnits.forEach((_, entityMap) => entityMap.values.forEach((entity) => fowManager.uncoverTiles(entity)));
+    TileManager tileManager = world.getManager(TileManager);
+    tileManager.initInfluence();
+    FACTIONS.forEach((faction) => tileManager.spreadFactionInfluence(faction));
     return null;
   }
 }

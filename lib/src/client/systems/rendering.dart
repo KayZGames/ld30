@@ -75,7 +75,7 @@ class TileRenderingSystem extends EntityProcessingSystem {
   CanvasElement tileBuffer;
   CanvasRenderingContext2D bufferCtx;
   SpriteSheet sheet;
-  TileRenderingSystem(this.ctx, this.sheet) : super(Aspect.getAspectForAllOf([Tile, Changed]));
+  TileRenderingSystem(this.ctx, this.sheet) : super(Aspect.getAspectForAllOf([Tile, Redraw]));
 
   @override
   void initialize() {
@@ -87,9 +87,9 @@ class TileRenderingSystem extends EntityProcessingSystem {
   void processEntity(Entity entity) {
     var tile = tileMapper.get(entity);
     var t = tm.get(entity);
-    var sprite = sheet.sprites['ground_${tile.faction}_${random.nextInt(7)}'];
+    var sprite = sheet.sprites['ground_${tile.faction}_${random.nextInt(1)}'];
     bufferCtx.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height, t.x * TILE_SIZE, t.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-    entity..removeComponent(Changed)
+    entity..removeComponent(Redraw)
           ..changedInWorld();
   }
 
@@ -156,7 +156,8 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
 
   @override
   void begin() {
-    ctx..setFillColorRgb(50, 50, 50)
+    ctx..save()
+       ..setFillColorRgb(50, 50, 50)
        ..fillRect(baseX, baseY, TILES_X * 2, TILES_Y * 2);
   }
 
@@ -168,7 +169,8 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
     var cameraTransform = tm.get(camera);
     ctx..setStrokeColorRgb(150, 150, 150)
        ..lineWidth = 1
-       ..strokeRect(1+baseX + cameraTransform.x / TILE_SIZE * 2, 1+baseY + cameraTransform.y / TILE_SIZE * 2, 800 / TILE_SIZE * 2, 600 / TILE_SIZE * 2);
+       ..strokeRect(1+baseX + cameraTransform.x / TILE_SIZE * 2, 1+baseY + cameraTransform.y / TILE_SIZE * 2, 800 / TILE_SIZE * 2, 600 / TILE_SIZE * 2)
+       ..restore();
   }
 
 
@@ -207,6 +209,7 @@ class FogOfWarRenderingSystem extends VoidEntitySystem {
   void initialize() {
     fogOfWarMini = new CanvasElement(width: TILES_X, height: TILES_Y);
     fogOfWarMini.context2D..fillStyle = 'black'
+//                          ..globalAlpha = 0.5
                           ..fillRect(0, 0, TILES_X, TILES_Y);
     fogOfWar = new CanvasElement(width: TILES_X * TILE_SIZE, height: TILES_Y * TILE_SIZE);
     fogOfWar.context2D.drawImageScaled(fogOfWarMini, 0, 0, TILES_X * TILE_SIZE, TILES_Y * TILE_SIZE);
@@ -372,5 +375,39 @@ class TurnMessageRenderingSystem extends EntityProcessingSystem {
       return "IT'S GETTING HOT IN HERE";
     }
     return '';
+  }
+}
+
+class DebugInfluenceRenderingSsystem extends VoidEntitySystem {
+  ComponentMapper<Transform> tm;
+  ComponentMapper<Tile> tileMapper;
+  TileManager tileManager;
+  TagManager tagManager;
+
+  CanvasRenderingContext2D ctx;
+  DebugInfluenceRenderingSsystem(this.ctx);
+
+  @override
+  void begin() {
+    ctx.save();
+  }
+
+  @override
+  void end() {
+    ctx.restore();
+  }
+
+  @override
+  void processSystem() {
+    var camereaEntity = tagManager.getEntity('camera');
+    var cameraTransform = tm.get(camereaEntity);
+    int minX = cameraTransform.x ~/ TILE_SIZE;
+    int minY = cameraTransform.y ~/ TILE_SIZE;
+    for (int y = minY; y < minY + 8; y++) {
+      for (int x = minX; x < minX + 10; x++) {
+        ctx..fillStyle = 'cyan'
+           ..fillText('${tileMapper.get(tileManager.tilesByCoord[x][y]).influence.toStringAsFixed(2)}', x * TILE_SIZE, 20 + y * TILE_SIZE);
+      }
+    }
   }
 }

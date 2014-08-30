@@ -146,6 +146,7 @@ class ConquerableUnitSystem extends EntityProcessingSystem {
   UnitManager unitManager;
   SpawnerManager spawnerManager;
   FogOfWarManager fowManager;
+  TileManager tileManager;
 
   ConquerableUnitSystem() : super(Aspect.getAspectForAllOf([Unit, Conquerable, Defeated]));
 
@@ -159,11 +160,12 @@ class ConquerableUnitSystem extends EntityProcessingSystem {
           ..changedInWorld();
 
     fowManager.uncoverTiles(entity);
-    unitManager.factionUnits[oldFaction][entity.id] = null;
+    unitManager.factionUnits[oldFaction].remove(entity.id);
     unitManager.factionUnits[u.faction][entity.id] = entity;
     if (sm.has(entity)) {
-      spawnerManager.factionSpawner[oldFaction][entity.id] = null;
+      spawnerManager.factionSpawner[oldFaction].remove(entity.id);
       spawnerManager.factionSpawner[u.faction][entity.id] = entity;
+      tileManager.growInfluence(entity, u.faction, captured: true);
     }
     if (u.faction == gameState.playerFaction) {
       eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Castle', 'conquered from $oldFaction'));
