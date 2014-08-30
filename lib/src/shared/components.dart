@@ -64,3 +64,9 @@ class Conquerable extends Component {}
 class NextTurnInfo extends Component {
   double timer = 1000.0;
 }
+
+class Tile extends Component {
+  String faction = F_NEUTRAL;
+}
+
+class Changed extends Component {}

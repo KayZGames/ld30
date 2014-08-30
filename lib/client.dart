@@ -19,7 +19,7 @@ export 'package:gamedev_helpers/gamedev_helpers.dart';
                              SpawnerManager, TurnManager, AiSystem, ConquerableUnitSystem,
                              MinimapRenderingSystem, FogOfWarRenderingSystem,
                              FogOfWarManager, FactionSelectionScreenRenderingSystem,
-                             TurnMessageRenderingSystem
+                             TurnMessageRenderingSystem, TileManager
                             ])
 import 'dart:mirrors';
 
@@ -36,6 +36,13 @@ class Game extends GameBase {
   }
 
   void createEntities() {
+    for (int y = 0; y < TILES_Y; y++) {
+      for (int x = 0; x < TILES_X; x++) {
+        addEntity([new Transform(x, y), new Tile()]);
+      }
+    }
+
+
     addEntity([new Transform(TILES_X ~/ 2, TILES_Y - 1), new Renderable('gate'), new Spawner.instant(3), new Unit(F_HELL, 0, 0, 4)]);
     addEntity([new Transform(TILES_X ~/ 2, 0), new Renderable('gate'), new Spawner.instant(3), new Unit(F_HEAVEN, 0, 0, 4)]);
     addEntity([new Transform(0, TILES_Y ~/ 2), new Renderable('gate'), new Spawner.instant(3), new Unit(F_FIRE, 0, 0, 4)]);
@@ -96,6 +103,7 @@ class Game extends GameBase {
     world.addManager(new TurnManager());
     world.addManager(new TagManager());
     world.addManager(new FogOfWarManager());
+    world.addManager(new TileManager());
     return super.onInit();
   }
 

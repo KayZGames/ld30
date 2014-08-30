@@ -186,3 +186,24 @@ class FogOfWarManager extends Manager {
     hasChanges = true;
   }
 }
+
+class TileManager extends Manager {
+  ComponentMapper<Tile> tileMapper;
+  ComponentMapper<Transform> transformMapper;
+
+  List<Entity> tiles = new List(TILES_X * TILES_Y);
+  List<List<Entity>> tilesByCoord = new List.generate(TILES_X, (_) => new List(TILES_Y));
+
+  @override
+  void added(Entity entity) {
+    if (tileMapper.has(entity)) {
+      var transform = transformMapper.get(entity);
+      var x = transform.x;
+      var y = transform.y;
+      tilesByCoord[x][y] = entity;
+      tiles[y * TILES_X + x] = entity;
+      entity.addComponent(new Changed());
+    }
+  }
+
+}

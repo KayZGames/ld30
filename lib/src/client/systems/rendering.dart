@@ -67,27 +67,34 @@ class UnitStatusRenderingSystem extends EntityProcessingSystem {
   bool checkProcessing() => !gameState.menu;
 }
 
-class TileRenderingSystem extends VoidEntitySystem {
+class TileRenderingSystem extends EntityProcessingSystem {
+  ComponentMapper<Tile> tileMapper;
+  ComponentMapper<Transform> tm;
 
   CanvasRenderingContext2D ctx;
   CanvasElement tileBuffer;
+  CanvasRenderingContext2D bufferCtx;
   SpriteSheet sheet;
-  TileRenderingSystem(this.ctx, this.sheet);
+  TileRenderingSystem(this.ctx, this.sheet) : super(Aspect.getAspectForAllOf([Tile, Changed]));
 
   @override
   void initialize() {
     tileBuffer = new CanvasElement(width: TILES_X * TILE_SIZE, height: TILES_Y * TILE_SIZE);
-    var bufferCtx = tileBuffer.context2D;
-    for (int y = 0; y < TILES_Y; y++) {
-      for (int x = 0; x < TILES_X; x++) {
-        var sprite = sheet.sprites['grass_${random.nextInt(7)}'];
-        bufferCtx.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-      }
-    }
+    bufferCtx = tileBuffer.context2D;
   }
 
   @override
-  void processSystem() {
+  void processEntity(Entity entity) {
+    var tile = tileMapper.get(entity);
+    var t = tm.get(entity);
+    var sprite = sheet.sprites['ground_${tile.faction}_${random.nextInt(7)}'];
+    bufferCtx.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height, t.x * TILE_SIZE, t.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    entity..removeComponent(Changed)
+          ..changedInWorld();
+  }
+
+  @override
+  void end() {
     ctx.drawImage(tileBuffer, 0, 0);
   }
 
