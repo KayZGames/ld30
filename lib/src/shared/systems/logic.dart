@@ -166,6 +166,7 @@ class ConquerableUnitSystem extends EntityProcessingSystem {
       spawnerManager.factionSpawner[oldFaction].remove(entity.id);
       spawnerManager.factionSpawner[u.faction][entity.id] = entity;
       tileManager.growInfluence(entity, u.faction, captured: true);
+      u.health = u.maxHealth * 0.2;
     }
     if (u.faction == gameState.playerFaction) {
       eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Castle', 'conquered from $oldFaction'));
