@@ -40,7 +40,13 @@ class Game extends GameBase {
   void createEntities() {
     for (int y = 0; y < TILES_Y; y++) {
       for (int x = 0; x < TILES_X; x++) {
-        addEntity([new Transform(x, y), new Tile(random.nextInt(6))]);
+        var variant = random.nextInt(7);
+        var counter = 0;
+        // make tile 6 a bit more rare
+        while (variant == 6 && ++counter < 20) {
+          variant = random.nextInt(7);
+        }
+        addEntity([new Transform(x, y), new Tile(random.nextInt(7))]);
       }
     }
 
