@@ -87,7 +87,7 @@ class TileRenderingSystem extends EntityProcessingSystem {
   void processEntity(Entity entity) {
     var tile = tileMapper.get(entity);
     var t = tm.get(entity);
-    var sprite = sheet.sprites['ground_${tile.faction}_${random.nextInt(1)}'];
+    var sprite = sheet.sprites['ground_${tile.faction}_${tile.variant}'];
     bufferCtx.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height, t.x * TILE_SIZE, t.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     entity..removeComponent(Redraw)
           ..changedInWorld();

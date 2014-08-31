@@ -70,6 +70,8 @@ class NextTurnInfo extends Component {
 class Tile extends Component {
   String faction = F_NEUTRAL;
   double influence = 1.0;
+  int variant;
+  Tile(this.variant);
 }
 
 class Redraw extends Component {}
