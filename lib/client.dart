@@ -26,8 +26,17 @@ export 'package:gamedev_helpers/gamedev_helpers.dart';
 import 'dart:mirrors';
 
 //part 'src/client/systems/name.dart';
-part 'src/client/systems/events.dart';
-part 'src/client/systems/rendering.dart';
+part 'src/client/systems/tile_rendering_system.dart';
+part 'src/client/systems/unit_status_rendering_system.dart';
+part 'src/client/systems/minimap_rendering_system.dart';
+part 'src/client/systems/fog_of_war_rendering_system.dart';
+part 'src/client/systems/faction_selection_screen_rendering_system.dart';
+part 'src/client/systems/turn_message_rendering_system.dart';
+part 'src/client/systems/debug_influence_rendering_ssystem.dart';
+part 'src/client/systems/selection_rendering_system.dart';
+part 'src/client/systems/buffer_to_canvas_rendering_system.dart';
+part 'src/client/systems/rendering_system.dart';
+part 'src/client/systems/input_handling_system.dart';
 
 class Game extends GameBase {
   CanvasElement buffer;

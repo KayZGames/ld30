@@ -6,10 +6,19 @@ import 'dart:collection';
 
 part 'src/shared/components.dart';
 
-//part 'src/shared/systems/name.dart';
-part 'src/shared/systems/ai.dart';
-part 'src/shared/systems/logic.dart';
-part 'src/shared/managers.dart';
+part 'src/shared/systems/ai_system.dart';
+part 'src/shared/systems/terrain_map.dart';
+part 'src/shared/systems/movement_system.dart';
+part 'src/shared/systems/attacker_system.dart';
+part 'src/shared/systems/defender_system.dart';
+part 'src/shared/systems/killed_in_action_system.dart';
+part 'src/shared/systems/conquerable_unit_system.dart';
+part 'src/shared/systems/conquerable_unit_recovery_system.dart';
+part 'src/shared/managers/unit_manager.dart';
+part 'src/shared/managers/spawner_manager.dart';
+part 'src/shared/managers/turn_manager.dart';
+part 'src/shared/managers/fog_of_war_manager.dart';
+part 'src/shared/managers/tile_manager.dart';
 
 typedef bool AddToQueueCondition(int tileId);
 typedef void AddToQueueAction(int tileId);
