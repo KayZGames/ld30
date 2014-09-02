@@ -134,6 +134,8 @@ class Game extends GameBase {
     TileManager tileManager = world.getManager(TileManager);
     tileManager.initInfluence();
     FACTIONS.forEach((faction) => tileManager.spreadFactionInfluence(faction));
+    TileRenderingSystem tileRenderingSystem = world.getSystem(TileRenderingSystem);
+    tileRenderingSystem.initTileBuffers();
     return null;
   }
 }
