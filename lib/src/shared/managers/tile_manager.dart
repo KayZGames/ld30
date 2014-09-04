@@ -5,9 +5,9 @@ class TileManager extends Manager {
   ComponentMapper<Transform> tm;
   ComponentMapper<Unit> um;
   SpawnerManager spawnerManager;
- 
-  List<Entity> tiles = new List(TILES_X * TILES_Y);
-  List<List<Entity>> tilesByCoord = new List.generate(TILES_X, (_) => new List(TILES_Y));
+
+  List<Entity> tiles = new List(gameState.sizeX * gameState.sizeY);
+  List<List<Entity>> tilesByCoord = new List.generate(gameState.sizeX, (_) => new List(gameState.sizeY));
 
   @override
   void added(Entity entity) {
@@ -16,7 +16,7 @@ class TileManager extends Manager {
       var x = t.x;
       var y = t.y;
       tilesByCoord[x][y] = entity;
-      tiles[y * TILES_X + x] = entity;
+      tiles[y * gameState.sizeX + x] = entity;
       entity.addComponent(new Redraw());
     }
   }
@@ -40,11 +40,11 @@ class TileManager extends Manager {
     tileMapper.get(tile).influence = baseInfluence;
 
     var visited = <int>[];
-    var open = new Queue<int>()..add(t.y * TILES_X + t.x);
+    var open = new Queue<int>()..add(t.y * gameState.sizeX + t.x);
     while (open.isNotEmpty) {
       var currentTileId = open.removeFirst();
       var currentTile = tileMapper.get(tiles[currentTileId]);
-      var distance = ((currentTileId % TILES_X - t.x).abs() + (currentTileId ~/ TILES_X - t.y).abs()) + 1;
+      var distance = ((currentTileId % gameState.sizeX - t.x).abs() + (currentTileId ~/ gameState.sizeX - t.y).abs()) + 1;
       var newInfluence = baseInfluence * INFLUENCE_FACTOR / (distance * distance);
       visitTile(currentTileId, visited, open, (nextTileId) {
         var nextTile = tileMapper.get(tiles[nextTileId]);
@@ -83,44 +83,21 @@ class TileManager extends Manager {
   }
 
   void initInfluence() {
-//    spawnerManager.factionSpawner.values.expand((entityMap) => entityMap.values).map((entity) {
-//      var t = tm.get(entity);
-//      tileMapper.get(tilesByCoord[t.x][t.y]).influenceWeight = 1.0;
-//      return entity;
-//    }).forEach((entity) {
-//      var u = um.get(entity);
-//      var t = tm.get(entity);
-//      var visited = <int>[];
-//      var open = new Queue<int>()..add(t.y * TILES_X + t.x);
-//      while (open.isNotEmpty) {
-//        var currentTileId = open.removeFirst();
-//        var currentTile = tileMapper.get(tiles[currentTileId]);
-//        visitTile(currentTileId, visited, open, (nextTileId) {
-//          var nextTile = tileMapper.get(tiles[nextTileId]);
-//          if (nextTile.influenceWeight < currentTile.influenceWeight * INFLUENCE_FACTOR) {
-//            return true;
-//          }
-//          return false;
-//        }, (nextTileId) {
-//          tileMapper.get(tiles[nextTileId]).influenceWeight = currentTile.influenceWeight * INFLUENCE_FACTOR;
-//        });
-//      }
-//    });
     FACTIONS.forEach((faction) => spawnerManager.factionSpawner[faction].values.forEach((entity) => growInfluence(entity, faction, captured: true)));
   }
 
   void visitTile(int tileId, List<int> visited, Queue<int> open, AddToQueueCondition addToQueueCondition, AddToQueueAction addToQueueAction) {
     visited.add(tileId);
-    var directions = <int>[-TILES_X, TILES_X];
-    if (tileId % TILES_X != 0) {
+    var directions = <int>[-gameState.sizeX, gameState.sizeX];
+    if (tileId % gameState.sizeX != 0) {
       directions.add(-1);
     }
-    if (tileId % TILES_X != TILES_X - 1) {
+    if (tileId % gameState.sizeX != gameState.sizeX - 1) {
       directions.add(1);
     }
     for (var direction in directions) {
       var target = tileId + direction;
-      if (target < 0 || target >= MAX_TILES) {
+      if (target < 0 || target >= gameState.maxTiles) {
         continue;
       }
       if (!visited.contains(target)

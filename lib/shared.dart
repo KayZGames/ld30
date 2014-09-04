@@ -23,10 +23,7 @@ part 'src/shared/managers/tile_manager.dart';
 typedef bool AddToQueueCondition(int tileId);
 typedef void AddToQueueAction(int tileId);
 
-const TILES_X = 64;
-const TILES_Y = 64;
 const TILE_SIZE = 64;
-const MAX_TILES = TILES_X * TILES_Y;
 const INFLUENCE_FACTOR = 0.95;
 
 const F_HEAVEN = 'heaven';
@@ -37,6 +34,8 @@ const F_NEUTRAL = 'neutral';
 const FACTIONS = const [F_HEAVEN, F_HELL, F_FIRE, F_ICE];
 
 class GameState {
+  int sizeX = 64;
+  int sizeY = 64;
   bool menu = true;
   int _player = FACTIONS.length - 1;
   String playerFaction = F_HELL;
@@ -45,6 +44,7 @@ class GameState {
   void nextFaction() {
     currentFaction = FACTIONS[_player++ % FACTIONS.length];
   }
+  int get maxTiles => sizeX * sizeY;
 }
 
 final GameState gameState = new GameState();

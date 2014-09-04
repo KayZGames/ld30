@@ -53,17 +53,17 @@ class FactionSelectionScreenRenderingSystem extends VoidEntitySystem {
       var camera = tagManager.getEntity('camera');
       var cameraTransform = tm.get(camera);
       if (selection == 0) {
-        cameraTransform.x = TILES_X * TILE_SIZE ~/ 2 - 400;
+        cameraTransform.x = gameState.sizeX * TILE_SIZE ~/ 2 - 400;
         cameraTransform.y = 0;
       } else if (selection == 1) {
-        cameraTransform.x = TILES_X * TILE_SIZE ~/ 2 - 400;
-        cameraTransform.y = TILES_Y * TILE_SIZE - 300;
+        cameraTransform.x = gameState.sizeX * TILE_SIZE ~/ 2 - 400;
+        cameraTransform.y = gameState.sizeY * TILE_SIZE - 300;
       } else if (selection == 2) {
         cameraTransform.x = 0;
-        cameraTransform.y = TILES_Y * TILE_SIZE ~/ 2 - 300;
+        cameraTransform.y = gameState.sizeY * TILE_SIZE ~/ 2 - 300;
       } else if (selection == 3) {
-        cameraTransform.x = TILES_X * TILE_SIZE - 800;
-        cameraTransform.y = TILES_Y * TILE_SIZE ~/ 2 - 300;
+        cameraTransform.x = gameState.sizeX * TILE_SIZE - 800;
+        cameraTransform.y = gameState.sizeY * TILE_SIZE ~/ 2 - 300;
       }
       eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Faction selected', FACTIONS[selection]));
       return;

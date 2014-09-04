@@ -6,9 +6,9 @@ class TileRenderingSystem extends EntityProcessingSystem {
   TagManager tagManager;
   TileManager tileManager;
 
-  Map<String, CanvasElement> factionTileMasks = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: TILES_X, height: TILES_Y));
-  Map<String, CanvasElement> factionTiles = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: TILES_X * TILE_SIZE, height: TILES_Y * TILE_SIZE));
-  Map<String, CanvasElement> factionTileBuffer = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: TILES_X * TILE_SIZE, height: TILES_Y * TILE_SIZE));
+  Map<String, CanvasElement> factionTileMasks = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: gameState.sizeX, height: gameState.sizeY));
+  Map<String, CanvasElement> factionTiles = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: gameState.sizeX * TILE_SIZE, height: gameState.sizeY * TILE_SIZE));
+  Map<String, CanvasElement> factionTileBuffer = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: gameState.sizeX * TILE_SIZE, height: gameState.sizeY * TILE_SIZE));
   bool changes = true;
 
   CanvasRenderingContext2D ctx;
@@ -21,9 +21,9 @@ class TileRenderingSystem extends EntityProcessingSystem {
 
   @override
   void initialize() {
-    neutralTileBuffer = new CanvasElement(width: TILES_X * TILE_SIZE, height: TILES_Y * TILE_SIZE);
+    neutralTileBuffer = new CanvasElement(width: gameState.sizeX * TILE_SIZE, height: gameState.sizeY * TILE_SIZE);
     neutralTileBufferCtx = neutralTileBuffer.context2D;
-    buffer = new CanvasElement(width: TILES_X * TILE_SIZE, height: TILES_Y * TILE_SIZE);
+    buffer = new CanvasElement(width: gameState.sizeX * TILE_SIZE, height: gameState.sizeY * TILE_SIZE);
     bufferCtx = buffer.context2D;
     factionTileMasks.values.forEach((canvas) => canvas.context2D.fillStyle = 'black');
   }
@@ -65,8 +65,8 @@ class TileRenderingSystem extends EntityProcessingSystem {
     if (changes) {
       changes = false;
       factionTileBuffer.forEach((faction, canvas) {
-        canvas.context2D..clearRect(0, 0, TILES_X * TILE_SIZE, TILES_Y * TILE_SIZE)
-                        ..drawImageScaledFromSource(factionTileMasks[faction], 0, 0, TILES_X, TILES_Y, 0, 0, TILES_X * TILE_SIZE, TILES_Y * TILE_SIZE)
+        canvas.context2D..clearRect(0, 0, gameState.sizeX * TILE_SIZE, gameState.sizeY * TILE_SIZE)
+                        ..drawImageScaledFromSource(factionTileMasks[faction], 0, 0, gameState.sizeX, gameState.sizeY, 0, 0, gameState.sizeX * TILE_SIZE, gameState.sizeY * TILE_SIZE)
                         ..globalCompositeOperation = 'source-atop'
                         ..drawImage(factionTiles[faction], 0, 0)
                         ..globalCompositeOperation = 'source-over';

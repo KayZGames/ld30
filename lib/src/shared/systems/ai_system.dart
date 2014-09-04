@@ -35,10 +35,10 @@ class AiSystem extends VoidEntitySystem {
       if (targetTiles.isIndexWithinBounds(entity.id)) {
         target = targetTiles[entity.id];
       }
-      if (target == null || unitManager.isFriendlyUnit(faction, target % TILES_X, target ~/ TILES_X)) {
+      if (target == null || unitManager.isFriendlyUnit(faction, target % gameState.sizeX, target ~/ gameState.sizeX)) {
         targetPath[entity.id] = null;
         var visibleTiles = fowManager.tiles[faction];
-        var visited = new Set<int>.from([t.y * TILES_X + t.x]);
+        var visited = new Set<int>.from([t.y * gameState.sizeX + t.x]);
         target = getNextTarget(visibleTiles, t.x, t.y, new Queue<int>(), visited);
         targetTiles[entity.id] = target;
       }
@@ -49,7 +49,7 @@ class AiSystem extends VoidEntitySystem {
       if (null == path) {
         terrainMap.reset();
         var pathFinder = new AStar<TerrainTile>(terrainMap);
-        path = pathFinder.findPathSync(terrainMap.nodes[t.y * TILES_X + t.x], terrainMap.nodes[target]);
+        path = pathFinder.findPathSync(terrainMap.nodes[t.y * gameState.sizeX + t.x], terrainMap.nodes[target]);
         if (path.length > 1) {
           path.removeFirst();
           targetPath[entity.id] = path;
@@ -69,23 +69,23 @@ class AiSystem extends VoidEntitySystem {
 
   int getNextTarget(List<List<bool>> visibleTiles, int x, int y, Queue<int> unvisited, Set<int> visited) {
     if (visibleTiles[x][y] == true && !unitManager.isTileEmpty(x, y) && !unitManager.isFriendlyUnit(gameState.currentFaction, x, y)) {
-      return y * TILES_X + x;
+      return y * gameState.sizeX + x;
     } else if (visibleTiles[x][y] == false) {
-      return y * TILES_X + x;
+      return y * gameState.sizeX + x;
     }
     var target = null;
     var randomDirections = new List.from(directions)..shuffle(random);
     for (List<int> direction in randomDirections) {
       var nextX = x + direction[0];
       var nextY = y + direction[1];
-      var tile = nextY * TILES_X + nextX;
-      if (!unvisited.contains(tile) && !visited.contains(tile) && nextX >= 0 && nextY >= 0 && nextX < TILES_X && nextY < TILES_Y) {
+      var tile = nextY * gameState.sizeX + nextX;
+      if (!unvisited.contains(tile) && !visited.contains(tile) && nextX >= 0 && nextY >= 0 && nextX < gameState.sizeX && nextY < gameState.sizeY) {
         unvisited.add(tile);
       }
     }
     target = unvisited.removeFirst();
     visited.add(target);
-    return getNextTarget(visibleTiles, target % TILES_X, target ~/ TILES_X, unvisited, visited);
+    return getNextTarget(visibleTiles, target % gameState.sizeX, target ~/ gameState.sizeX, unvisited, visited);
   }
 
   @override

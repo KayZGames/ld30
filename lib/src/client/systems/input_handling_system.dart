@@ -1,8 +1,8 @@
 part of client;
 
 class InputHandlingSystem extends GenericInputHandlingSystem {
-  final maxX = TILES_X * TILE_SIZE - 800;
-  final maxY = TILES_Y * TILE_SIZE - 600;
+  final maxX = gameState.sizeX * TILE_SIZE - 800;
+  final maxY = gameState.sizeY * TILE_SIZE - 600;
   var blockingKeys = new Set.from([KeyCode.N, KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.ENTER]);
   var blockedKeys = new Set<int>();
   Map<int, List<int>> directions = {

@@ -5,7 +5,7 @@ class UnitManager extends Manager {
   ComponentMapper<Selected> sm;
   ComponentMapper<Transform> tm;
   ComponentMapper<Move> mm;
-  List<List<Entity>> unitCoords = new List.generate(TILES_X, (_) => new List(TILES_Y));
+  List<List<Entity>> unitCoords = new List.generate(gameState.sizeX, (_) => new List(gameState.sizeY));
   Map<String, Map<int, Entity>> factionUnits = {F_HELL: <int, Entity>{},
                                           F_HEAVEN: <int, Entity>{},
                                           F_FIRE: <int, Entity>{},
@@ -41,7 +41,7 @@ class UnitManager extends Manager {
   }
 
   bool isTileEmpty(int x, int y) {
-    if (x < 0 || y < 0 || x >= TILES_X || y >= TILES_Y) return false;
+    if (x < 0 || y < 0 || x >= gameState.sizeX || y >= gameState.sizeY) return false;
     return unitCoords[x][y] == null;
   }
 

@@ -20,7 +20,7 @@ class MovementSystem extends EntityProcessingSystem {
       var m = mm.get(entity);
       var targetX = t.x + m.x;
       var targetY = t.y + m.y;
-      if (targetX >= 0 && targetY >= 0 && targetX < TILES_X && targetY < TILES_Y) {
+      if (targetX >= 0 && targetY >= 0 && targetX < gameState.sizeX && targetY < gameState.sizeY) {
         var targetEntity = unitManager.getEntity(targetX, targetY);
         if (null == targetEntity) {
           unitManager.unitCoords[t.x][t.y] = null;

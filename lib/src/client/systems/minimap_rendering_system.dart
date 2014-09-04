@@ -1,8 +1,8 @@
 part of client;
 
 class MinimapRenderingSystem extends EntityProcessingSystem {
-  final baseX = 800 - TILES_X * 2;
-  final baseY = 600 - TILES_Y * 2;
+  final baseX = 800 - gameState.sizeX * 2;
+  final baseY = 600 - gameState.sizeY * 2;
   ComponentMapper<Unit> um;
   ComponentMapper<Transform> tm;
   TagManager tagManager;
@@ -16,12 +16,12 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
   void begin() {
     ctx..save()
        ..setFillColorRgb(50, 50, 50)
-       ..fillRect(baseX, baseY, TILES_X * 2, TILES_Y * 2);
+       ..fillRect(baseX, baseY, gameState.sizeX * 2, gameState.sizeY * 2);
   }
 
   @override
   void end() {
-    ctx.drawImageScaled(fowrs.fogOfWarMini, baseX, baseY, TILES_X * 2, TILES_Y * 2);
+    ctx.drawImageScaled(fowrs.fogOfWarMini, baseX, baseY, gameState.sizeX * 2, gameState.sizeY * 2);
 
     var camera = tagManager.getEntity('camera');
     var cameraTransform = tm.get(camera);
