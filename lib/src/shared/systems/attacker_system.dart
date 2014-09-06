@@ -37,10 +37,10 @@ class AttackerSystem extends EntityProcessingSystem {
         }
         counter++;
       }
-      if (enemyUnit.health < 0.0) {
+      if (enemyUnit.health <= 0.0) {
         enemyEntity..addComponent(new Defeated(unit.faction))
                    ..changedInWorld();
-      } else if (unit.health < 0.0) {
+      } else if (unit.health <= 0.0) {
         entity..addComponent(new Defeated(unit.faction))
               ..changedInWorld();
       }
