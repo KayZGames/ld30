@@ -1,9 +1,27 @@
 part of client;
 
 class MenuScreenRenderingSystem extends VoidEntitySystem {
-  final FACTION_SELECT = 'Select your world!';
-  final factions = ['World of Angels', 'World of Demons', 'World of Fire', 'World of Ice'];
-  int selection = 0;
+  static final HEAVEN = 0;
+  static final HELL = 1;
+  static final FIRE = 2;
+  static final ICE = 3;
+  static final int OPTION_FACTION = 0;
+  static final int OPTION_MAPSIZE = 1;
+  static final int OPTION_START_GAME = 2;
+
+  Map<int, int> highlighted = {OPTION_FACTION: 0,
+                              OPTION_MAPSIZE: 0,
+                              OPTION_START_GAME: 0};
+  Map<int, int> optionCount = {OPTION_FACTION: 4,
+                               OPTION_MAPSIZE: 3,
+                               OPTION_START_GAME: 1};
+  Map<int, String> optionLabels = {OPTION_FACTION: ['Angelus', 'Abyssus', 'Ignis', 'Glacies'],
+                                   OPTION_MAPSIZE: ['Small', 'Medium', 'Large'],
+                                   OPTION_START_GAME: ['Start Game']};
+  Map<int, int> selected = {OPTION_FACTION: null,
+                            OPTION_MAPSIZE: null};
+
+  int selectedRow = 0;
 
   /// to prevent scrolling
   var preventDefaultKeys = new Set.from([KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.SPACE]);
@@ -40,56 +58,94 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
 
   @override
   void processSystem() {
-    if (keyState[KeyCode.UP] == true) {
-      selection = (selection - 1) % factions.length;
-      keyState[KeyCode.UP] = false;
+    if (keyState[KeyCode.LEFT] == true) {
+      highlighted[selectedRow] = (highlighted[selectedRow] - 1) % optionCount[selectedRow];
+      keyState[KeyCode.LEFT] = false;
+    } else if (keyState[KeyCode.RIGHT] == true) {
+      highlighted[selectedRow] = (highlighted[selectedRow] + 1) % optionCount[selectedRow];
+      keyState[KeyCode.RIGHT] = false;
     } else if (keyState[KeyCode.DOWN] == true) {
-      selection = (selection + 1) % factions.length;
+      selectedRow = (selectedRow + 1) % 3;
       keyState[KeyCode.DOWN] = false;
+    } else if (keyState[KeyCode.UP] == true) {
+      selectedRow = (selectedRow - 1) % 3;
+      keyState[KeyCode.UP] = false;
     }
     if (keyState[KeyCode.ENTER] == true) {
-      gameState.playerFaction = FACTIONS[selection];
-      gameState.menu = false;
-      var camera = tagManager.getEntity('camera');
-      var cameraTransform = tm.get(camera);
-      if (selection == 0) {
-        cameraTransform.x = gameState.sizeX * TILE_SIZE ~/ 2 - 400;
-        cameraTransform.y = 0;
-      } else if (selection == 1) {
-        cameraTransform.x = gameState.sizeX * TILE_SIZE ~/ 2 - 400;
-        cameraTransform.y = gameState.sizeY * TILE_SIZE - 300;
-      } else if (selection == 2) {
-        cameraTransform.x = 0;
-        cameraTransform.y = gameState.sizeY * TILE_SIZE ~/ 2 - 300;
-      } else if (selection == 3) {
-        cameraTransform.x = gameState.sizeX * TILE_SIZE - 800;
-        cameraTransform.y = gameState.sizeY * TILE_SIZE ~/ 2 - 300;
+      if (selectedRow == OPTION_START_GAME
+        && selected[OPTION_FACTION] != null
+        && selected[OPTION_MAPSIZE] != null) {
+        gameState.playerFaction = FACTIONS[selected[OPTION_FACTION]];
+        gameState.menu = false;
+        var camera = tagManager.getEntity('camera');
+        var cameraTransform = tm.get(camera);
+        if (gameState.playerFaction == F_HEAVEN) {
+          cameraTransform.x = gameState.sizeX * TILE_SIZE ~/ 2 - 400;
+          cameraTransform.y = 0;
+        } else if (gameState.playerFaction == F_HELL) {
+          cameraTransform.x = gameState.sizeX * TILE_SIZE ~/ 2 - 400;
+          cameraTransform.y = gameState.sizeY * TILE_SIZE - 300;
+        } else if (gameState.playerFaction == F_FIRE) {
+          cameraTransform.x = 0;
+          cameraTransform.y = gameState.sizeY * TILE_SIZE ~/ 2 - 300;
+        } else if (gameState.playerFaction == F_ICE) {
+          cameraTransform.x = gameState.sizeX * TILE_SIZE - 800;
+          cameraTransform.y = gameState.sizeY * TILE_SIZE ~/ 2 - 300;
+        }
+        eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Faction selected', gameState.playerFaction));
+        return;
+      } else if (selectedRow != OPTION_START_GAME) {
+        selected[selectedRow] = highlighted[selectedRow];
       }
-      eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Faction selected', FACTIONS[selection]));
-      return;
     }
     ctx..save()
        ..setFillColorRgb(100, 100, 100)
        ..setStrokeColorRgb(50, 50, 50)
-       ..fillRect(50, 50, 700, 500)
-       ..strokeRect(50, 50, 700, 500)
+       ..globalAlpha = 0.2
+       ..fillRect(0, 0, 800, 600)
+       ..strokeRect(00, 00, 800, 600)
+       ..globalAlpha = 1.0
        ..font = '20px Verdana'
-       ..fillStyle = 'black'
-       ..fillText(FACTION_SELECT, 400 - ctx.measureText(FACTION_SELECT).width / 2, 100);
+       ..fillStyle = 'black';
 
-    drawOption(0);
-    drawOption(1);
-    drawOption(2);
-    drawOption(3);
+    drawLabel('FACTION', 50);
+    drawLabel('MAP SIZE', 150);
+    for (int option = 0; option < 3; option++) {
+      for (int i = 0; i < optionCount[option]; i++) {
+        drawOption(option, i);
+      }
+    }
     ctx..restore();
   }
 
-  void drawOption(int index) {
-    var greyness = selection == index ? 200 : 150;
-    ctx..setFillColorRgb(greyness, greyness, greyness)
-       ..fillRect(100, 165 + index * 90, 600, 70)
+  void drawLabel(String label, int y) {
+    var width = ctx.measureText(label).width;
+    ctx..moveTo(50, y)
+       ..lineTo(400 - width / 2 - 20, y)
+       ..moveTo(400 + width / 2 + 20, y)
+       ..lineTo(750, y)
+       ..stroke()
        ..fillStyle = 'black'
-       ..fillText(factions[index], 400 - ctx.measureText(factions[index]).width / 2, 190 + index * 90);
+       ..fillText(label, 400 - width / 2, y - 10);
+  }
+
+  void drawOption(int option, int index) {
+    var greyness = 150;
+    if (selected[option] == index) {
+      greyness = 50;
+    }
+    if (selectedRow == option && highlighted[option] == index) {
+      greyness = 200;
+      if (selected[option] == index) {
+        greyness = 100;
+      }
+    }
+    var labelWidth = ctx.measureText(optionLabels[option][index]).width;
+    var x = 400 + (index - optionCount[option] / 2) * 175 + 12.5;
+    ctx..setFillColorRgb(greyness, greyness, greyness)
+       ..fillRect(x, 75 + option * 100, 150, 50)
+       ..fillStyle = selected[option] == index ? 'white' : 'black'
+       ..fillText(optionLabels[option][index], x + 75 - labelWidth / 2, 90 + option * 100);
   }
 
   @override
