@@ -1,6 +1,6 @@
 part of client;
 
-class FactionSelectionScreenRenderingSystem extends VoidEntitySystem {
+class MenuScreenRenderingSystem extends VoidEntitySystem {
   final FACTION_SELECT = 'Select your world!';
   final factions = ['World of Angels', 'World of Demons', 'World of Fire', 'World of Ice'];
   int selection = 0;
@@ -16,7 +16,7 @@ class FactionSelectionScreenRenderingSystem extends VoidEntitySystem {
 
   CanvasRenderingContext2D ctx;
 
-  FactionSelectionScreenRenderingSystem(this.ctx);
+  MenuScreenRenderingSystem(this.ctx);
 
   @override
   void initialize() {

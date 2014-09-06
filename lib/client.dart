@@ -18,7 +18,7 @@ export 'package:gamedev_helpers/gamedev_helpers.dart';
                              KilledInActionSystem, UnitManager, UnitStatusRenderingSystem,
                              SpawnerManager, TurnManager, AiSystem, ConquerableUnitSystem,
                              MinimapRenderingSystem, FogOfWarRenderingSystem,
-                             FogOfWarManager, FactionSelectionScreenRenderingSystem,
+                             FogOfWarManager, MenuScreenRenderingSystem,
                              TurnMessageRenderingSystem, TileManager,
 
                              DebugInfluenceRenderingSsystem
@@ -30,7 +30,7 @@ part 'src/client/systems/tile_rendering_system.dart';
 part 'src/client/systems/unit_status_rendering_system.dart';
 part 'src/client/systems/minimap_rendering_system.dart';
 part 'src/client/systems/fog_of_war_rendering_system.dart';
-part 'src/client/systems/faction_selection_screen_rendering_system.dart';
+part 'src/client/systems/menu_screen_rendering_system.dart';
 part 'src/client/systems/turn_message_rendering_system.dart';
 part 'src/client/systems/debug_influence_rendering_ssystem.dart';
 part 'src/client/systems/selection_rendering_system.dart';
@@ -107,7 +107,7 @@ class Game extends GameBase {
             new BufferToCanvasRenderingSystem(ctx, buffer),
             new MinimapRenderingSystem(ctx),
             new TurnMessageRenderingSystem(ctx),
-            new FactionSelectionScreenRenderingSystem(ctx),
+            new MenuScreenRenderingSystem(ctx),
 
             new KilledInActionSystem(),
             new AnalyticsSystem(AnalyticsSystem.GITHUB, 'ld30')
