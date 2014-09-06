@@ -6,6 +6,7 @@ class SpawnerManager extends Manager {
   ComponentMapper<Unit> um;
   UnitManager unitManager;
   FogOfWarManager fowManager;
+  GameManager gameManager;
 
   final spawnArea = <List<int>>[[0, -1], [1, -1], [-1, -1], [-1, 0], [1, 0], [0, 1], [1, 1], [-1, 1]];
 
@@ -42,7 +43,7 @@ class SpawnerManager extends Manager {
         var components = [new Transform(t.x + coords[0], t.y + coords[1]),
                           new Unit(unit.faction, 5, unit.level, 2),
                           new Renderable('peasant')];
-        if (null == unitManager.getSelectedUnit(gameState.currentFaction)) {
+        if (null == unitManager.getSelectedUnit(gameManager.currentFaction)) {
           components.add(new Selected());
         }
         var spawnedEntity = world.createAndAddEntity(components);

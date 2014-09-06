@@ -8,6 +8,7 @@ class AiSystem extends VoidEntitySystem {
   UnitManager unitManager;
   TurnManager turnManager;
   FogOfWarManager fowManager;
+  GameManager gameManager;
 
   ComponentMapper<Unit> um;
 
@@ -17,12 +18,12 @@ class AiSystem extends VoidEntitySystem {
 
   @override
   void initialize() {
-    terrainMap = new TerrainMap(unitManager);
+    terrainMap = new TerrainMap(gameManager, unitManager);
   }
 
   @override
   void processSystem() {
-    var faction = gameState.currentFaction;
+    var faction = gameManager.currentFaction;
     var entity = unitManager.getSelectedUnit(faction);
     if (entity == null || um.get(entity).movesLeft <= 0) {
       entity = unitManager.getNextUnit(faction);
@@ -35,10 +36,10 @@ class AiSystem extends VoidEntitySystem {
       if (targetTiles.isIndexWithinBounds(entity.id)) {
         target = targetTiles[entity.id];
       }
-      if (target == null || unitManager.isFriendlyUnit(faction, target % gameState.sizeX, target ~/ gameState.sizeX)) {
+      if (target == null || unitManager.isFriendlyUnit(faction, target % gameManager.sizeX, target ~/ gameManager.sizeX)) {
         targetPath[entity.id] = null;
         var visibleTiles = fowManager.tiles[faction];
-        var visited = new Set<int>.from([t.y * gameState.sizeX + t.x]);
+        var visited = new Set<int>.from([t.y * gameManager.sizeX + t.x]);
         target = getNextTarget(visibleTiles, t.x, t.y, new Queue<int>(), visited);
         targetTiles[entity.id] = target;
       }
@@ -49,7 +50,7 @@ class AiSystem extends VoidEntitySystem {
       if (null == path) {
         terrainMap.reset();
         var pathFinder = new AStar<TerrainTile>(terrainMap);
-        path = pathFinder.findPathSync(terrainMap.nodes[t.y * gameState.sizeX + t.x], terrainMap.nodes[target]);
+        path = pathFinder.findPathSync(terrainMap.nodes[t.y * gameManager.sizeX + t.x], terrainMap.nodes[target]);
         if (path.length > 1) {
           path.removeFirst();
           targetPath[entity.id] = path;
@@ -68,26 +69,26 @@ class AiSystem extends VoidEntitySystem {
   }
 
   int getNextTarget(List<List<bool>> visibleTiles, int x, int y, Queue<int> unvisited, Set<int> visited) {
-    if (visibleTiles[x][y] == true && !unitManager.isTileEmpty(x, y) && !unitManager.isFriendlyUnit(gameState.currentFaction, x, y)) {
-      return y * gameState.sizeX + x;
+    if (visibleTiles[x][y] == true && !unitManager.isTileEmpty(x, y) && !unitManager.isFriendlyUnit(gameManager.currentFaction, x, y)) {
+      return y * gameManager.sizeX + x;
     } else if (visibleTiles[x][y] == false) {
-      return y * gameState.sizeX + x;
+      return y * gameManager.sizeX + x;
     }
     var target = null;
     var randomDirections = new List.from(directions)..shuffle(random);
     for (List<int> direction in randomDirections) {
       var nextX = x + direction[0];
       var nextY = y + direction[1];
-      var tile = nextY * gameState.sizeX + nextX;
-      if (!unvisited.contains(tile) && !visited.contains(tile) && nextX >= 0 && nextY >= 0 && nextX < gameState.sizeX && nextY < gameState.sizeY) {
+      var tile = nextY * gameManager.sizeX + nextX;
+      if (!unvisited.contains(tile) && !visited.contains(tile) && nextX >= 0 && nextY >= 0 && nextX < gameManager.sizeX && nextY < gameManager.sizeY) {
         unvisited.add(tile);
       }
     }
     target = unvisited.removeFirst();
     visited.add(target);
-    return getNextTarget(visibleTiles, target % gameState.sizeX, target ~/ gameState.sizeX, unvisited, visited);
+    return getNextTarget(visibleTiles, target % gameManager.sizeX, target ~/ gameManager.sizeX, unvisited, visited);
   }
 
   @override
-  bool checkProcessing() => gameState.currentFaction != gameState.playerFaction && !gameState.menu;
+  bool checkProcessing() => gameManager.currentFaction != gameManager.playerFaction && !gameManager.menu;
 }

@@ -1,27 +1,36 @@
 part of client;
 
 class MinimapRenderingSystem extends EntityProcessingSystem {
-  final baseX = 800 - gameState.sizeX * 2;
-  final baseY = 600 - gameState.sizeY * 2;
+  int baseX;
+  int baseY;
   ComponentMapper<Unit> um;
   ComponentMapper<Transform> tm;
   TagManager tagManager;
   FogOfWarRenderingSystem fowrs;
+  GameManager gameManager;
 
   CanvasRenderingContext2D ctx;
 
   MinimapRenderingSystem(this.ctx) : super(Aspect.getAspectForAllOf([Unit, Transform]));
 
   @override
+  void initialize() {
+    eventBus.on(gameStartedEvent).listen((_) {
+      baseX = 800 - gameManager.sizeX * 2;
+      baseY = 600 - gameManager.sizeY * 2;
+    });
+  }
+
+  @override
   void begin() {
     ctx..save()
        ..setFillColorRgb(50, 50, 50)
-       ..fillRect(baseX, baseY, gameState.sizeX * 2, gameState.sizeY * 2);
+       ..fillRect(baseX, baseY, gameManager.sizeX * 2, gameManager.sizeY * 2);
   }
 
   @override
   void end() {
-    ctx.drawImageScaled(fowrs.fogOfWarMini, baseX, baseY, gameState.sizeX * 2, gameState.sizeY * 2);
+    ctx.drawImageScaled(fowrs.fogOfWarMini, baseX, baseY, gameManager.sizeX * 2, gameManager.sizeY * 2);
 
     var camera = tagManager.getEntity('camera');
     var cameraTransform = tm.get(camera);
@@ -37,7 +46,7 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
     var t = tm.get(entity);
     var u = um.get(entity);
 
-    if (u.faction == gameState.playerFaction) {
+    if (u.faction == gameManager.playerFaction) {
       ctx.setFillColorRgb(0, 255, 0);
     } else if (u.faction == 'neutral') {
       ctx.setFillColorRgb(150, 150, 150);
@@ -48,5 +57,5 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
   }
 
   @override
-  bool checkProcessing() => !gameState.menu;
+  bool checkProcessing() => !gameManager.menu;
 }

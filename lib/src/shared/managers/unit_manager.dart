@@ -5,12 +5,20 @@ class UnitManager extends Manager {
   ComponentMapper<Selected> sm;
   ComponentMapper<Transform> tm;
   ComponentMapper<Move> mm;
-  List<List<Entity>> unitCoords = new List.generate(gameState.sizeX, (_) => new List(gameState.sizeY));
+  GameManager gameManager;
+  List<List<Entity>> unitCoords;
   Map<String, Map<int, Entity>> factionUnits = {F_HELL: <int, Entity>{},
                                           F_HEAVEN: <int, Entity>{},
                                           F_FIRE: <int, Entity>{},
                                           F_ICE: <int, Entity>{},
                                           F_NEUTRAL: <int, Entity>{}};
+
+  @override
+  void initialize() {
+    eventBus.on(gameStartedEvent).listen((_) {
+      unitCoords = new List.generate(gameManager.sizeX, (_) => new List(gameManager.sizeY));
+    });
+  }
 
 
   @override
@@ -41,7 +49,7 @@ class UnitManager extends Manager {
   }
 
   bool isTileEmpty(int x, int y) {
-    if (x < 0 || y < 0 || x >= gameState.sizeX || y >= gameState.sizeY) return false;
+    if (x < 0 || y < 0 || x >= gameManager.sizeX || y >= gameManager.sizeY) return false;
     return unitCoords[x][y] == null;
   }
 

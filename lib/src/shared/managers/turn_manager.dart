@@ -7,16 +7,17 @@ class TurnManager extends Manager {
   UnitManager unitManager;
   TileManager tileManager;
   SpawnerManager spawnerManager;
+  GameManager gameManager;
 
   void nextTurn() {
-    unitManager.factionUnits[gameState.currentFaction]..values.forEach((entity) => um.get(entity).nextTurn());
-    spawnerManager.factionSpawner[gameState.currentFaction].values.forEach((entity) => sm.get(entity).spawnTime--);
+    unitManager.factionUnits[gameManager.currentFaction]..values.forEach((entity) => um.get(entity).nextTurn());
+    spawnerManager.factionSpawner[gameManager.currentFaction].values.forEach((entity) => sm.get(entity).spawnTime--);
 
-    gameState.nextFaction();
+    gameManager.nextFaction();
 
-    unitManager.factionUnits[gameState.currentFaction].values.forEach(recoverConquarable);
-    spawnerManager.factionSpawner[gameState.currentFaction].values.forEach(spawnerManager.spawn);
-    tileManager.spreadFactionInfluence(gameState.currentFaction);
+    unitManager.factionUnits[gameManager.currentFaction].values.forEach(recoverConquarable);
+    spawnerManager.factionSpawner[gameManager.currentFaction].values.forEach(spawnerManager.spawn);
+    tileManager.spreadFactionInfluence(gameManager.currentFaction);
 
     world.createAndAddEntity([new NextTurnInfo()]);
   }

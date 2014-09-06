@@ -19,6 +19,10 @@ part 'src/shared/managers/spawner_manager.dart';
 part 'src/shared/managers/turn_manager.dart';
 part 'src/shared/managers/fog_of_war_manager.dart';
 part 'src/shared/managers/tile_manager.dart';
+part 'src/shared/managers/game_manager.dart';
+
+final gameStartedEvent = new EventType<GameStartedEvent>();
+class GameStartedEvent {}
 
 typedef bool AddToQueueCondition(int tileId);
 typedef void AddToQueueAction(int tileId);
@@ -32,19 +36,3 @@ const F_FIRE = 'fire';
 const F_ICE = 'ice';
 const F_NEUTRAL = 'neutral';
 const FACTIONS = const [F_HEAVEN, F_HELL, F_FIRE, F_ICE];
-
-class GameState {
-  int sizeX = 64;
-  int sizeY = 64;
-  bool menu = true;
-  int _player = FACTIONS.length - 1;
-  String playerFaction = F_HELL;
-  String currentFaction = FACTIONS[FACTIONS.length - 1];
-
-  void nextFaction() {
-    currentFaction = FACTIONS[_player++ % FACTIONS.length];
-  }
-  int get maxTiles => sizeX * sizeY;
-}
-
-final GameState gameState = new GameState();

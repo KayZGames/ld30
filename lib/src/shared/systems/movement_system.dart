@@ -8,6 +8,7 @@ class MovementSystem extends EntityProcessingSystem {
 
   FogOfWarManager fowManager;
   TagManager tagManager;
+  GameManager gameManager;
 
   MovementSystem() : super(Aspect.getAspectForAllOf([Transform, Move, Unit]).exclude([Attacker, Defender]));
 
@@ -20,7 +21,7 @@ class MovementSystem extends EntityProcessingSystem {
       var m = mm.get(entity);
       var targetX = t.x + m.x;
       var targetY = t.y + m.y;
-      if (targetX >= 0 && targetY >= 0 && targetX < gameState.sizeX && targetY < gameState.sizeY) {
+      if (targetX >= 0 && targetY >= 0 && targetX < gameManager.sizeX && targetY < gameManager.sizeY) {
         var targetEntity = unitManager.getEntity(targetX, targetY);
         if (null == targetEntity) {
           unitManager.unitCoords[t.x][t.y] = null;
@@ -29,7 +30,7 @@ class MovementSystem extends EntityProcessingSystem {
           unitManager.unitCoords[t.x][t.y] = entity;
           u.movesLeft -= 1;
           fowManager.uncoverTiles(entity);
-          if (gameState.currentFaction == gameState.playerFaction) {
+          if (gameManager.currentFaction == gameManager.playerFaction) {
             var camera = tagManager.getEntity('camera');
             var cameraTransform = tm.get(camera);
             cameraTransform.x = t.x * TILE_SIZE - 400;

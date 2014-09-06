@@ -2,6 +2,7 @@ part of client;
 
 class TurnMessageRenderingSystem extends EntityProcessingSystem {
   ComponentMapper<NextTurnInfo> im;
+  GameManager gameManager;
 
   CanvasRenderingContext2D ctx;
   TurnMessageRenderingSystem(this.ctx) : super(Aspect.getAspectForAllOf([NextTurnInfo]));
@@ -27,15 +28,15 @@ class TurnMessageRenderingSystem extends EntityProcessingSystem {
   }
 
   String getInfoText() {
-    if (gameState.currentFaction == gameState.playerFaction) {
+    if (gameManager.currentFaction == gameManager.playerFaction) {
       return 'YOUR TURN';
-    } else if (gameState.currentFaction == F_HELL) {
+    } else if (gameManager.currentFaction == F_HELL) {
       return 'THE PORTALS OF HELL HAVE OPENED';
-    } else if (gameState.currentFaction == F_HEAVEN) {
+    } else if (gameManager.currentFaction == F_HEAVEN) {
       return 'THE ANGELS BRING DOOMSDAY';
-    } else if (gameState.currentFaction == F_ICE) {
+    } else if (gameManager.currentFaction == F_ICE) {
       return 'WINTER IS COMING';
-    } else if (gameState.currentFaction == F_FIRE) {
+    } else if (gameManager.currentFaction == F_FIRE) {
       return "IT'S GETTING HOT IN HERE";
     }
     return '';

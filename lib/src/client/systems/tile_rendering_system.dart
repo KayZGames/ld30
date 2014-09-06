@@ -5,10 +5,11 @@ class TileRenderingSystem extends EntityProcessingSystem {
   ComponentMapper<Transform> tm;
   TagManager tagManager;
   TileManager tileManager;
+  GameManager gameManager;
 
-  Map<String, CanvasElement> factionTileMasks = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: gameState.sizeX, height: gameState.sizeY));
-  Map<String, CanvasElement> factionTiles = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: gameState.sizeX * TILE_SIZE, height: gameState.sizeY * TILE_SIZE));
-  Map<String, CanvasElement> factionTileBuffer = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: gameState.sizeX * TILE_SIZE, height: gameState.sizeY * TILE_SIZE));
+  Map<String, CanvasElement> factionTileMasks;
+  Map<String, CanvasElement> factionTiles;
+  Map<String, CanvasElement> factionTileBuffer;
   bool changes = true;
 
   CanvasRenderingContext2D ctx;
@@ -21,24 +22,36 @@ class TileRenderingSystem extends EntityProcessingSystem {
 
   @override
   void initialize() {
-    neutralTileBuffer = new CanvasElement(width: gameState.sizeX * TILE_SIZE, height: gameState.sizeY * TILE_SIZE);
-    neutralTileBufferCtx = neutralTileBuffer.context2D;
-    buffer = new CanvasElement(width: gameState.sizeX * TILE_SIZE, height: gameState.sizeY * TILE_SIZE);
-    bufferCtx = buffer.context2D;
-    factionTileMasks.values.forEach((canvas) => canvas.context2D.fillStyle = 'black');
+    eventBus.on(gameStartedEvent).listen((_) {
+      factionTileMasks = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: gameManager.sizeX, height: gameManager.sizeY));
+      factionTiles = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: gameManager.sizeX * TILE_SIZE, height: gameManager.sizeY * TILE_SIZE));
+      factionTileBuffer = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: gameManager.sizeX * TILE_SIZE, height: gameManager.sizeY * TILE_SIZE));
+      neutralTileBuffer = new CanvasElement(width: gameManager.sizeX * TILE_SIZE, height: gameManager.sizeY * TILE_SIZE);
+      neutralTileBufferCtx = neutralTileBuffer.context2D;
+      buffer = new CanvasElement(width: gameManager.sizeX * TILE_SIZE, height: gameManager.sizeY * TILE_SIZE);
+      bufferCtx = buffer.context2D;
+      factionTileMasks.values.forEach((canvas) => canvas.context2D.fillStyle = 'black');
+      initTileBuffers();
+    });
   }
 
   void initTileBuffers() {
-    tileManager.tiles.forEach((entity) {
-      var tile = tileMapper.get(entity);
-        var t = tm.get(entity);
-        var sprite = sheet.sprites['ground_neutral_${tile.variant}'];
-        neutralTileBufferCtx.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height, t.x * TILE_SIZE, t.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    for (int y = 0; y < gameManager.sizeY; y++) {
+      for (int x = 0; x < gameManager.sizeX; x++) {
+        var variant = random.nextInt(7);
+        var counter = 0;
+        // make tile 6 a bit more rare
+        while (variant == 6 && ++counter < 20) {
+          variant = random.nextInt(7);
+        }
+        var sprite = sheet.sprites['ground_neutral_${variant}'];
+        neutralTileBufferCtx.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         factionTiles.forEach((faction, canvas) {
-          sprite = sheet.sprites['ground_${faction}_${tile.variant}'];
-          canvas.context2D.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height, t.x * TILE_SIZE, t.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+          sprite = sheet.sprites['ground_${faction}_${variant}'];
+          canvas.context2D.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         });
-    });
+      }
+    }
   }
 
   @override
@@ -65,8 +78,8 @@ class TileRenderingSystem extends EntityProcessingSystem {
     if (changes) {
       changes = false;
       factionTileBuffer.forEach((faction, canvas) {
-        canvas.context2D..clearRect(0, 0, gameState.sizeX * TILE_SIZE, gameState.sizeY * TILE_SIZE)
-                        ..drawImageScaledFromSource(factionTileMasks[faction], 0, 0, gameState.sizeX, gameState.sizeY, 0, 0, gameState.sizeX * TILE_SIZE, gameState.sizeY * TILE_SIZE)
+        canvas.context2D..clearRect(0, 0, gameManager.sizeX * TILE_SIZE, gameManager.sizeY * TILE_SIZE)
+                        ..drawImageScaledFromSource(factionTileMasks[faction], 0, 0, gameManager.sizeX, gameManager.sizeY, 0, 0, gameManager.sizeX * TILE_SIZE, gameManager.sizeY * TILE_SIZE)
                         ..globalCompositeOperation = 'source-atop'
                         ..drawImage(factionTiles[faction], 0, 0)
                         ..globalCompositeOperation = 'source-over';
@@ -80,5 +93,5 @@ class TileRenderingSystem extends EntityProcessingSystem {
   }
 
   @override
-  bool checkProcessing() => !gameState.menu;
+  bool checkProcessing() => !gameManager.menu;
 }

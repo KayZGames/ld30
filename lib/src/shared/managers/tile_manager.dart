@@ -5,9 +5,18 @@ class TileManager extends Manager {
   ComponentMapper<Transform> tm;
   ComponentMapper<Unit> um;
   SpawnerManager spawnerManager;
+  GameManager gameManager;
 
-  List<Entity> tiles = new List(gameState.sizeX * gameState.sizeY);
-  List<List<Entity>> tilesByCoord = new List.generate(gameState.sizeX, (_) => new List(gameState.sizeY));
+  List<Entity> tiles;
+  List<List<Entity>> tilesByCoord;
+
+  @override
+  void initialize() {
+    eventBus.on(gameStartedEvent).listen((_) {
+      tiles = new List(gameManager.sizeX * gameManager.sizeY);
+      tilesByCoord = new List.generate(gameManager.sizeX, (_) => new List(gameManager.sizeY));
+    });
+  }
 
   @override
   void added(Entity entity) {
@@ -16,7 +25,7 @@ class TileManager extends Manager {
       var x = t.x;
       var y = t.y;
       tilesByCoord[x][y] = entity;
-      tiles[y * gameState.sizeX + x] = entity;
+      tiles[y * gameManager.sizeX + x] = entity;
       entity.addComponent(new Redraw());
     }
   }
@@ -40,11 +49,11 @@ class TileManager extends Manager {
     tileMapper.get(tile).influence = baseInfluence;
 
     var visited = <int>[];
-    var open = new Queue<int>()..add(t.y * gameState.sizeX + t.x);
+    var open = new Queue<int>()..add(t.y * gameManager.sizeX + t.x);
     while (open.isNotEmpty) {
       var currentTileId = open.removeFirst();
       var currentTile = tileMapper.get(tiles[currentTileId]);
-      var distance = ((currentTileId % gameState.sizeX - t.x).abs() + (currentTileId ~/ gameState.sizeX - t.y).abs()) + 1;
+      var distance = ((currentTileId % gameManager.sizeX - t.x).abs() + (currentTileId ~/ gameManager.sizeX - t.y).abs()) + 1;
       var newInfluence = baseInfluence * INFLUENCE_FACTOR / (distance * distance);
       visitTile(currentTileId, visited, open, (nextTileId) {
         var nextTile = tileMapper.get(tiles[nextTileId]);
@@ -88,16 +97,16 @@ class TileManager extends Manager {
 
   void visitTile(int tileId, List<int> visited, Queue<int> open, AddToQueueCondition addToQueueCondition, AddToQueueAction addToQueueAction) {
     visited.add(tileId);
-    var directions = <int>[-gameState.sizeX, gameState.sizeX];
-    if (tileId % gameState.sizeX != 0) {
+    var directions = <int>[-gameManager.sizeX, gameManager.sizeX];
+    if (tileId % gameManager.sizeX != 0) {
       directions.add(-1);
     }
-    if (tileId % gameState.sizeX != gameState.sizeX - 1) {
+    if (tileId % gameManager.sizeX != gameManager.sizeX - 1) {
       directions.add(1);
     }
     for (var direction in directions) {
       var target = tileId + direction;
-      if (target < 0 || target >= gameState.maxTiles) {
+      if (target < 0 || target >= gameManager.maxTiles) {
         continue;
       }
       if (!visited.contains(target)

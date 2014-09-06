@@ -4,6 +4,7 @@ class RenderingSystem extends EntityProcessingSystem {
   ComponentMapper<Transform> tm;
   ComponentMapper<Renderable> rm;
   ComponentMapper<Unit> um;
+  GameManager gameManager;
 
   CanvasRenderingContext2D ctx;
   SpriteSheet sheet;
@@ -23,5 +24,5 @@ class RenderingSystem extends EntityProcessingSystem {
   }
 
   @override
-  bool checkProcessing() => !gameState.menu;
+  bool checkProcessing() => !gameManager.menu;
 }

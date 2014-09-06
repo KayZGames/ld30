@@ -1,8 +1,8 @@
 part of client;
 
 class InputHandlingSystem extends GenericInputHandlingSystem {
-  final maxX = gameState.sizeX * TILE_SIZE - 800;
-  final maxY = gameState.sizeY * TILE_SIZE - 600;
+  int maxX;
+  int maxY;
   var blockingKeys = new Set.from([KeyCode.N, KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.ENTER]);
   var blockedKeys = new Set<int>();
   Map<int, List<int>> directions = {
@@ -18,7 +18,17 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
   ComponentMapper<Transform> tm;
   UnitManager unitManager;
   TurnManager turnManager;
+  GameManager gameManager;
   InputHandlingSystem() : super(Aspect.getAspectForAllOf([Camera, Transform]));
+
+  @override
+  void initialize() {
+    super.initialize();
+    eventBus.on(gameStartedEvent).listen((_) {
+      maxX = gameManager.sizeX * TILE_SIZE - 800;
+      maxY = gameManager.sizeY * TILE_SIZE - 600;
+    });
+  }
 
   @override
   void handleInput(KeyboardEvent event, bool pressed) {
@@ -51,9 +61,9 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
     var t = tm.get(entity);
     t.x += x;
     t.y += y;
-    if (gameState.currentFaction == gameState.playerFaction) {
+    if (gameManager.currentFaction == gameManager.playerFaction) {
       if (keyState[KeyCode.N] == true) {
-        var moveableUnit = unitManager.getNextUnit(gameState.playerFaction);
+        var moveableUnit = unitManager.getNextUnit(gameManager.playerFaction);
         if (null != moveableUnit) {
           var unitTransform = tm.get(moveableUnit);
           t.x = unitTransform.x * TILE_SIZE - 400;
@@ -64,7 +74,7 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
           keyState[KeyCode.N] = false;
         }
       }
-      Entity selectedUnit = unitManager.getSelectedUnit(gameState.playerFaction);
+      Entity selectedUnit = unitManager.getSelectedUnit(gameManager.playerFaction);
       if (null != selectedUnit) {
         if (keyState[KeyCode.NUM_EIGHT] == true) {
           moveUnit(selectedUnit, KeyCode.NUM_EIGHT);
@@ -101,5 +111,5 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
   }
 
   @override
-  bool checkProcessing() => !gameState.menu;
+  bool checkProcessing() => !gameManager.menu;
 }

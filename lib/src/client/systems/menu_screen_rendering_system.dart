@@ -30,6 +30,7 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
   var blockedKeys = new Set<int>();
 
   TagManager tagManager;
+  GameManager gameManager;
   ComponentMapper<Transform> tm;
 
   CanvasRenderingContext2D ctx;
@@ -75,24 +76,38 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
       if (selectedRow == OPTION_START_GAME
         && selected[OPTION_FACTION] != null
         && selected[OPTION_MAPSIZE] != null) {
-        gameState.playerFaction = FACTIONS[selected[OPTION_FACTION]];
-        gameState.menu = false;
+        gameManager.playerFaction = FACTIONS[selected[OPTION_FACTION]];
+        switch (selected[OPTION_MAPSIZE]) {
+          case 0:
+            gameManager.sizeX = 16;
+            gameManager.sizeY = 16;
+            break;
+          case 1:
+            gameManager.sizeX = 32;
+            gameManager.sizeY = 32;
+            break;
+          default:
+            gameManager.sizeX = 64;
+            gameManager.sizeY = 64;
+            break;
+        }
         var camera = tagManager.getEntity('camera');
         var cameraTransform = tm.get(camera);
-        if (gameState.playerFaction == F_HEAVEN) {
-          cameraTransform.x = gameState.sizeX * TILE_SIZE ~/ 2 - 400;
+        if (gameManager.playerFaction == F_HEAVEN) {
+          cameraTransform.x = gameManager.sizeX * TILE_SIZE ~/ 2 - 400;
           cameraTransform.y = 0;
-        } else if (gameState.playerFaction == F_HELL) {
-          cameraTransform.x = gameState.sizeX * TILE_SIZE ~/ 2 - 400;
-          cameraTransform.y = gameState.sizeY * TILE_SIZE - 300;
-        } else if (gameState.playerFaction == F_FIRE) {
+        } else if (gameManager.playerFaction == F_HELL) {
+          cameraTransform.x = gameManager.sizeX * TILE_SIZE ~/ 2 - 400;
+          cameraTransform.y = gameManager.sizeY * TILE_SIZE - 300;
+        } else if (gameManager.playerFaction == F_FIRE) {
           cameraTransform.x = 0;
-          cameraTransform.y = gameState.sizeY * TILE_SIZE ~/ 2 - 300;
-        } else if (gameState.playerFaction == F_ICE) {
-          cameraTransform.x = gameState.sizeX * TILE_SIZE - 800;
-          cameraTransform.y = gameState.sizeY * TILE_SIZE ~/ 2 - 300;
+          cameraTransform.y = gameManager.sizeY * TILE_SIZE ~/ 2 - 300;
+        } else if (gameManager.playerFaction == F_ICE) {
+          cameraTransform.x = gameManager.sizeX * TILE_SIZE - 800;
+          cameraTransform.y = gameManager.sizeY * TILE_SIZE ~/ 2 - 300;
         }
-        eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Faction selected', gameState.playerFaction));
+        eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Faction selected', gameManager.playerFaction));
+        gameManager.startGame();
         return;
       } else if (selectedRow != OPTION_START_GAME) {
         selected[selectedRow] = highlighted[selectedRow];
@@ -149,5 +164,5 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
   }
 
   @override
-  bool checkProcessing() => gameState.menu;
+  bool checkProcessing() => gameManager.menu;
 }

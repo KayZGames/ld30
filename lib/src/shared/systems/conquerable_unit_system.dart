@@ -9,6 +9,7 @@ class ConquerableUnitSystem extends EntityProcessingSystem {
   SpawnerManager spawnerManager;
   FogOfWarManager fowManager;
   TileManager tileManager;
+  GameManager gameManager;
 
   ConquerableUnitSystem() : super(Aspect.getAspectForAllOf([Unit, Conquerable, Defeated]));
 
@@ -30,9 +31,9 @@ class ConquerableUnitSystem extends EntityProcessingSystem {
       tileManager.growInfluence(entity, u.faction, captured: true);
       u.health = u.maxHealth * 0.2;
     }
-    if (u.faction == gameState.playerFaction) {
+    if (u.faction == gameManager.playerFaction) {
       eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Castle', 'conquered from $oldFaction'));
-    } else if (oldFaction == gameState.playerFaction) {
+    } else if (oldFaction == gameManager.playerFaction) {
       eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Castle', 'lost to ${u.faction}'));
     }
   }

@@ -4,6 +4,7 @@ class FogOfWarRenderingSystem extends VoidEntitySystem {
   FogOfWarManager fowManager;
   TagManager tagManager;
   ComponentMapper<Transform> tm;
+  GameManager gameManager;
 
   CanvasRenderingContext2D ctx;
   CanvasElement fogOfWar;
@@ -14,18 +15,20 @@ class FogOfWarRenderingSystem extends VoidEntitySystem {
 
   @override
   void initialize() {
-    fogOfWarMini = new CanvasElement(width: gameState.sizeX, height: gameState.sizeY);
-    fogOfWarMini.context2D..fillStyle = 'black'
-//                          ..globalAlpha = 0.5
-                          ..fillRect(0, 0, gameState.sizeX, gameState.sizeY);
-    fogOfWar = new CanvasElement(width: gameState.sizeX * TILE_SIZE, height: gameState.sizeY * TILE_SIZE);
-    fogOfWar.context2D.drawImageScaled(fogOfWarMini, 0, 0, gameState.sizeX * TILE_SIZE, gameState.sizeY * TILE_SIZE);
+    eventBus.on(gameStartedEvent).listen((_) {
+      fogOfWarMini = new CanvasElement(width: gameManager.sizeX, height: gameManager.sizeY);
+      fogOfWarMini.context2D..fillStyle = 'black'
+  //                          ..globalAlpha = 0.5
+                            ..fillRect(0, 0, gameManager.sizeX, gameManager.sizeY);
+      fogOfWar = new CanvasElement(width: gameManager.sizeX * TILE_SIZE, height: gameManager.sizeY * TILE_SIZE);
+      fogOfWar.context2D.drawImageScaled(fogOfWarMini, 0, 0, gameManager.sizeX * TILE_SIZE, gameManager.sizeY * TILE_SIZE);
+    });
   }
 
   @override
   void processSystem() {
     if (fowManager.hasChanges) {
-      var tiles = fowManager.tiles[gameState.playerFaction];
+      var tiles = fowManager.tiles[gameManager.playerFaction];
       for (int x = 0; x < tiles.length; x++) {
         for (int y = 0; y < tiles[x].length; y++) {
           if (tiles[x][y]) {
@@ -34,8 +37,8 @@ class FogOfWarRenderingSystem extends VoidEntitySystem {
         }
       }
       fowManager.hasChanges = false;
-      fogOfWar.context2D..clearRect(0, 0, gameState.sizeX * TILE_SIZE, gameState.sizeY * TILE_SIZE)
-                        ..drawImageScaled(fogOfWarMini, 0, 0, gameState.sizeX * TILE_SIZE, gameState.sizeY * TILE_SIZE);
+      fogOfWar.context2D..clearRect(0, 0, gameManager.sizeX * TILE_SIZE, gameManager.sizeY * TILE_SIZE)
+                        ..drawImageScaled(fogOfWarMini, 0, 0, gameManager.sizeX * TILE_SIZE, gameManager.sizeY * TILE_SIZE);
     }
     var camera = tagManager.getEntity('camera');
     var t = tm.get(camera);
@@ -44,5 +47,5 @@ class FogOfWarRenderingSystem extends VoidEntitySystem {
   }
 
   @override
-  bool checkProcessing() => !gameState.menu;
+  bool checkProcessing() => !gameManager.menu;
 }

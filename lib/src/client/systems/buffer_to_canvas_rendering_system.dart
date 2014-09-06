@@ -2,6 +2,7 @@ part of client;
 
 class BufferToCanvasRenderingSystem extends EntityProcessingSystem {
   ComponentMapper<Transform> tm;
+  GameManager gameManager;
 
   CanvasRenderingContext2D ctx;
   CanvasElement buffer;
@@ -14,5 +15,5 @@ class BufferToCanvasRenderingSystem extends EntityProcessingSystem {
   }
 
   @override
-  bool checkProcessing() => !gameState.menu;
+  bool checkProcessing() => !gameManager.menu;
 }
