@@ -4,6 +4,9 @@ class AiSystem extends VoidEntitySystem {
   final directions = <List<int>>[[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]];
 
   ComponentMapper<Transform> tm;
+  ComponentMapper<Move> mm;
+  ComponentMapper<Attacker> am;
+  ComponentMapper<Defender> dm;
 
   UnitManager unitManager;
   TurnManager turnManager;
@@ -22,6 +25,11 @@ class AiSystem extends VoidEntitySystem {
   }
 
   @override
+  void begin() {
+    world.processEntityChanges();
+  }
+
+  @override
   void processSystem() {
     var faction = gameManager.currentFaction;
     var entity = unitManager.getSelectedUnit(faction);
@@ -30,6 +38,9 @@ class AiSystem extends VoidEntitySystem {
     }
     if (null == entity) {
       turnManager.nextTurn();
+    } else if (mm.has(entity) || am.has(entity) || dm.has(entity)) {
+      // entity is still occupied
+      return;
     } else {
       var t = tm.get(entity);
       var target = null;
@@ -47,7 +58,7 @@ class AiSystem extends VoidEntitySystem {
       if (targetPath.isIndexWithinBounds(entity.id)) {
         path = targetPath[entity.id];
       }
-      if (null == path) {
+      if (null == path && null != target) {
         terrainMap.reset();
         var pathFinder = new AStar<TerrainTile>(terrainMap);
         path = pathFinder.findPathSync(terrainMap.nodes[t.y * gameManager.sizeX + t.x], terrainMap.nodes[target]);
@@ -56,7 +67,10 @@ class AiSystem extends VoidEntitySystem {
           targetPath[entity.id] = path;
         }
       }
-      if (path.length > 0) {
+      if (null == path) {
+        // no path, no target, no enemy, game over
+        turnManager.nextTurn();
+      } else if (path.length > 0) {
         var tile = path.removeFirst();
         entity..addComponent(new Move(tile.x - t.x, tile.y - t.y))
               ..changedInWorld();
@@ -83,6 +97,9 @@ class AiSystem extends VoidEntitySystem {
       if (!unvisited.contains(tile) && !visited.contains(tile) && nextX >= 0 && nextY >= 0 && nextX < gameManager.sizeX && nextY < gameManager.sizeY) {
         unvisited.add(tile);
       }
+    }
+    if (unvisited.length == 0) {
+      return null;
     }
     target = unvisited.removeFirst();
     visited.add(target);
