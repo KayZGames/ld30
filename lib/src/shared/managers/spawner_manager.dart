@@ -43,9 +43,6 @@ class SpawnerManager extends Manager {
         var components = [new Transform(t.x + coords[0], t.y + coords[1]),
                           new Unit(unit.faction, 5, unit.level, 2),
                           new Renderable('peasant')];
-        if (null == unitManager.getSelectedUnit(gameManager.currentFaction)) {
-          components.add(new Selected());
-        }
         var spawnedEntity = world.createAndAddEntity(components);
         s.spawnTime = s.maxSpawnTime;
         fowManager.uncoverTiles(spawnedEntity);
