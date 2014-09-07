@@ -54,11 +54,11 @@ class AiSystem extends VoidEntitySystem {
         target = getNextTarget(visibleTiles, t.x, t.y, new Queue<int>(), visited);
         targetTiles[entity.id] = target;
       }
-      var path = null;
+      Queue<TerrainTile> path = null;
       if (targetPath.isIndexWithinBounds(entity.id)) {
         path = targetPath[entity.id];
       }
-      if (null == path && null != target) {
+      if ((null == path || path.isEmpty) && null != target) {
         terrainMap.reset();
         var pathFinder = new AStar<TerrainTile>(terrainMap);
         path = pathFinder.findPathSync(terrainMap.nodes[t.y * gameManager.sizeX + t.x], terrainMap.nodes[target]);

@@ -11,7 +11,7 @@ class TerrainMap implements Graph<TerrainTile> {
   GameManager gameManager;
   var nodes;
   TerrainMap(GameManager gameManager, this.unitManager) : gameManager = gameManager,
-      nodes = new List<TerrainTile>.generate(gameManager.sizeX * gameManager.sizeY, (index) => new TerrainTile(index % gameManager.sizeX, index ~/ gameManager.sizeY));
+      nodes = new List<TerrainTile>.generate(gameManager.sizeX * gameManager.sizeY, (index) => new TerrainTile(index % gameManager.sizeX, index ~/ gameManager.sizeX));
 
   @override
   Iterable<TerrainTile> get allNodes => nodes;
@@ -19,7 +19,7 @@ class TerrainMap implements Graph<TerrainTile> {
   @override
   num getDistance(TerrainTile a, TerrainTile b) {
     if (unitManager.isTileEmpty(b.x, b.y)) {
-      return (a.x - b.x).abs() + (a.y - b.y).abs();
+      return min((a.x - b.x).abs(), (a.y - b.y).abs());
     }
     return 1000.0;
   }

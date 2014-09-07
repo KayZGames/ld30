@@ -7,7 +7,7 @@ import 'dart:collection';
 part 'src/shared/components.dart';
 
 part 'src/shared/systems/ai_system.dart';
-part 'src/shared/systems/terrain_map.dart';
+part 'src/shared/terrain_map.dart';
 part 'src/shared/systems/movement_system.dart';
 part 'src/shared/systems/attacker_system.dart';
 part 'src/shared/systems/defender_system.dart';
