@@ -1,6 +1,15 @@
 part of client;
 
 class MenuScreenRenderingSystem extends VoidEntitySystem {
+  static const MENU_BACKGROUND = Colors.RAIN_FOREST;
+  static const MENU_BORDER = Colors.DEEP_KOAMARU;
+  static const MENU_LABEL = Colors.OPAL;
+  static const MENU_LABEL_SELECTED = Colors.HEATHER;
+  static const MENU_BUTTON = Colors.CHRISTI;
+  static const MENU_BUTTON_BORDER = Colors.VERDIGRIS;
+  static const MENU_BUTTON_SELECTED = Colors.DELL;
+  static const MENU_BUTTON_HIGHLIGHTED = Colors.ATLANTIS;
+  static const MENU_BUTTON_SELECTED_HIGHLIGHTED = Colors.ELF_GREEN;
   static final HEAVEN = 0;
   static final HELL = 1;
   static final FIRE = 2;
@@ -114,14 +123,12 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
       }
     }
     ctx..save()
-       ..setFillColorRgb(100, 100, 100)
-       ..setStrokeColorRgb(50, 50, 50)
-       ..globalAlpha = 0.2
+       ..fillStyle = MENU_BACKGROUND
+       ..strokeStyle = MENU_BORDER
        ..fillRect(0, 0, 800, 600)
        ..strokeRect(00, 00, 800, 600)
        ..globalAlpha = 1.0
-       ..font = '20px Verdana'
-       ..fillStyle = 'black';
+       ..font = '20px Verdana';
 
     drawLabel('FACTION', 50);
     drawLabel('MAP SIZE', 150);
@@ -136,30 +143,34 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
   void drawLabel(String label, int y) {
     var width = ctx.measureText(label).width;
     ctx..moveTo(50, y)
+       ..fillStyle = MENU_LABEL
+       ..strokeStyle = MENU_LABEL
        ..lineTo(400 - width / 2 - 20, y)
        ..moveTo(400 + width / 2 + 20, y)
        ..lineTo(750, y)
        ..stroke()
-       ..fillStyle = 'black'
        ..fillText(label, 400 - width / 2, y - 10);
   }
 
   void drawOption(int option, int index) {
-    var greyness = 150;
+    var fillStyle = MENU_BUTTON;
     if (selected[option] == index) {
-      greyness = 50;
+      fillStyle = MENU_BUTTON_SELECTED;
     }
     if (selectedRow == option && highlighted[option] == index) {
-      greyness = 200;
+      fillStyle = MENU_BUTTON_HIGHLIGHTED;
       if (selected[option] == index) {
-        greyness = 100;
+        fillStyle = MENU_BUTTON_SELECTED_HIGHLIGHTED;
       }
     }
     var labelWidth = ctx.measureText(optionLabels[option][index]).width;
     var x = 400 + (index - optionCount[option] / 2) * 175 + 12.5;
-    ctx..setFillColorRgb(greyness, greyness, greyness)
+    ctx..fillStyle = fillStyle
+       ..lineWidth = 1
+       ..strokeStyle = MENU_BUTTON_BORDER
        ..fillRect(x, 75 + option * 100, 150, 50)
-       ..fillStyle = selected[option] == index ? 'white' : 'black'
+       ..strokeRect(x, 75 + option * 100, 150, 50)
+       ..fillStyle = selected[option] == index ? MENU_LABEL_SELECTED : MENU_LABEL
        ..fillText(optionLabels[option][index], x + 75 - labelWidth / 2, 90 + option * 100);
   }
 
