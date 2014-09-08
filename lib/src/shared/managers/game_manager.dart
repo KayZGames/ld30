@@ -9,7 +9,7 @@ class GameManager extends Manager {
   String currentFaction = FACTIONS[FACTIONS.length - 1];
 
   void startGame() {
-    eventBus.fire(gameStartedEvent, null);
+    eventBus.fire(new GameStartedEvent(), sync: true);
     menu = false;
     for (int y = 0; y < sizeY; y++) {
       for (int x = 0; x < sizeX; x++) {

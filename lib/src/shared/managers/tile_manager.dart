@@ -12,7 +12,7 @@ class TileManager extends Manager {
 
   @override
   void initialize() {
-    eventBus.on(gameStartedEvent).listen((_) {
+    eventBus.on(GameStartedEvent).listen((_) {
       tiles = new List(gameManager.sizeX * gameManager.sizeY);
       tilesByCoord = new List.generate(gameManager.sizeX, (_) => new List(gameManager.sizeY));
     });

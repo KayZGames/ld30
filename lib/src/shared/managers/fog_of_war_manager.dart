@@ -10,7 +10,7 @@ class FogOfWarManager extends Manager {
 
   @override
   void initialize() {
-    eventBus.on(gameStartedEvent).listen((_) {
+    eventBus.on(GameStartedEvent).listen((_) {
       tiles = {F_HELL: new List.generate(gameManager.sizeX, (_) => new List.generate(gameManager.sizeY, (_) => false)),
                                            F_HEAVEN: new List.generate(gameManager.sizeX, (_) => new List.generate(gameManager.sizeY, (_) => false)),
                                            F_FIRE: new List.generate(gameManager.sizeX, (_) => new List.generate(gameManager.sizeY, (_) => false)),

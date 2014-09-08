@@ -115,7 +115,7 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
           cameraTransform.x = gameManager.sizeX * TILE_SIZE - 800;
           cameraTransform.y = gameManager.sizeY * TILE_SIZE ~/ 2 - 300;
         }
-        eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Faction selected', gameManager.playerFaction));
+        eventBus.fire(new AnalyticsTrackEvent('Faction selected', gameManager.playerFaction));
         gameManager.startGame();
         return;
       } else if (selectedRow != OPTION_START_GAME) {

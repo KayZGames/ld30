@@ -42,7 +42,7 @@ class Game extends GameBase {
   CanvasElement buffer;
   Game() : super('ld30', 'canvas', 800, 600, bodyDefsName: null) {
     buffer = new CanvasElement();
-    eventBus.on(gameStartedEvent).listen((_) {
+    eventBus.on(GameStartedEvent).listen((_) {
       GameManager gameManager = world.getManager(GameManager);
       buffer.width = gameManager.sizeX * TILE_SIZE;
       buffer.height = gameManager.sizeY * TILE_SIZE;

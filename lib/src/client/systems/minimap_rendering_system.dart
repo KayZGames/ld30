@@ -15,7 +15,7 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
 
   @override
   void initialize() {
-    eventBus.on(gameStartedEvent).listen((_) {
+    eventBus.on(GameStartedEvent).listen((_) {
       baseX = 800 - gameManager.sizeX * 2;
       baseY = 600 - gameManager.sizeY * 2;
     });

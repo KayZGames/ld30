@@ -22,7 +22,7 @@ class TileRenderingSystem extends EntityProcessingSystem {
 
   @override
   void initialize() {
-    eventBus.on(gameStartedEvent).listen((_) {
+    eventBus.on(GameStartedEvent).listen((_) {
       factionTileMasks = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: gameManager.sizeX, height: gameManager.sizeY));
       factionTiles = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: gameManager.sizeX * TILE_SIZE, height: gameManager.sizeY * TILE_SIZE));
       factionTileBuffer = new Map.fromIterable(FACTIONS, key: (key) => key, value: (_) => new CanvasElement(width: gameManager.sizeX * TILE_SIZE, height: gameManager.sizeY * TILE_SIZE));

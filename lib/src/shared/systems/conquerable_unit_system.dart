@@ -32,9 +32,9 @@ class ConquerableUnitSystem extends EntityProcessingSystem {
       u.health = u.maxHealth * 0.2;
     }
     if (u.faction == gameManager.playerFaction) {
-      eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Castle', 'conquered from $oldFaction'));
+      eventBus.fire(new AnalyticsTrackEvent('Castle', 'conquered from $oldFaction'));
     } else if (oldFaction == gameManager.playerFaction) {
-      eventBus.fire(analyticsTrackEvent, new AnalyticsTrackEvent('Castle', 'lost to ${u.faction}'));
+      eventBus.fire(new AnalyticsTrackEvent('Castle', 'lost to ${u.faction}'));
     }
   }
 }

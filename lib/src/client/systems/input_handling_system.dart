@@ -24,7 +24,7 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
   @override
   void initialize() {
     super.initialize();
-    eventBus.on(gameStartedEvent).listen((_) {
+    eventBus.on(GameStartedEvent).listen((_) {
       maxX = gameManager.sizeX * TILE_SIZE - 800;
       maxY = gameManager.sizeY * TILE_SIZE - 600;
     });

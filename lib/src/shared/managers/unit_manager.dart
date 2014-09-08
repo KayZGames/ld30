@@ -15,7 +15,7 @@ class UnitManager extends Manager {
 
   @override
   void initialize() {
-    eventBus.on(gameStartedEvent).listen((_) {
+    eventBus.on(GameStartedEvent).listen((_) {
       unitCoords = new List.generate(gameManager.sizeX, (_) => new List(gameManager.sizeY));
     });
   }

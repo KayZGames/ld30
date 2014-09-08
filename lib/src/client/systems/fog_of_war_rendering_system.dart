@@ -15,7 +15,7 @@ class FogOfWarRenderingSystem extends VoidEntitySystem {
 
   @override
   void initialize() {
-    eventBus.on(gameStartedEvent).listen((_) {
+    eventBus.on(GameStartedEvent).listen((_) {
       fogOfWarMini = new CanvasElement(width: gameManager.sizeX, height: gameManager.sizeY);
       fogOfWarMini.context2D..fillStyle = 'black'
   //                          ..globalAlpha = 0.5

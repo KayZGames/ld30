@@ -21,7 +21,6 @@ part 'src/shared/managers/fog_of_war_manager.dart';
 part 'src/shared/managers/tile_manager.dart';
 part 'src/shared/managers/game_manager.dart';
 
-final gameStartedEvent = new EventType<GameStartedEvent>();
 class GameStartedEvent {}
 
 typedef bool AddToQueueCondition(int tileId);
