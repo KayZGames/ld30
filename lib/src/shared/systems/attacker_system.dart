@@ -20,10 +20,6 @@ class AttackerSystem extends EntityProcessingSystem {
       t.displacementX = 0.0;
       t.displacementY = 0.0;
       var enemyEntity = unitManager.getEntity(t.x + a.x, t.y + a.y);
-      if (enemyEntity == null) {
-        // something went wrong here....
-        return;
-      }
       var unit = um.get(entity);
       var enemyUnit = um.get(enemyEntity);
       var strength = unit.offStrength + enemyUnit.defStrength;

@@ -5,6 +5,9 @@ class UnitManager extends Manager {
   ComponentMapper<Selected> sm;
   ComponentMapper<Transform> tm;
   ComponentMapper<Move> mm;
+  ComponentMapper<Attacker> am;
+  ComponentMapper<Defender> defenderMapper;
+  ComponentMapper<Defeated> defeatedMapper;
   GameManager gameManager;
   List<List<Entity>> unitCoords;
   Map<String, Map<int, Entity>> factionUnits = {F_HELL: <int, Entity>{},
@@ -81,4 +84,6 @@ class UnitManager extends Manager {
     }
     return false;
   }
+
+  bool isOccupied(Entity entity) => mm.has(entity) || am.has(entity) || defeatedMapper.has(entity)|| defenderMapper.has(entity);
 }

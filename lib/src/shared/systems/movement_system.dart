@@ -37,6 +37,10 @@ class MovementSystem extends EntityProcessingSystem {
             cameraTransform.y = t.y * TILE_SIZE - 300;
           }
         } else {
+          if (unitManager.isOccupied(targetEntity)) {
+            // try again next iteration
+            return;
+          }
           var otherUnit = um.get(targetEntity);
           if (otherUnit.faction != u.faction) {
             targetEntity..addComponent(new Defender(-m.x, -m.y))
