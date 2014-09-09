@@ -23,11 +23,17 @@ class FogOfWarManager extends Manager {
   void uncoverTiles(Entity entity) {
     var t = tm.get(entity);
     var u = um.get(entity);
+    var faction = u.faction;
+    var tx = t.x;
+    var ty = t.y;
 
     for (int y = -u.viewRange; y <= u.viewRange; y++) {
       for (int x = -u.viewRange; x <= u.viewRange; x++) {
-        if (x.abs() + y.abs() <= u.viewRange && t.x + x >= 0 && t.x + x < gameManager.sizeX && t.y + y >= 0 && t.y + y < gameManager.sizeY) {
-          tiles[u.faction][t.x + x][t.y + y] = true;
+        if (x.abs() + y.abs() <= u.viewRange && tx + x >= 0 && tx + x < gameManager.sizeX && ty + y >= 0 && ty + y < gameManager.sizeY) {
+          if (!tiles[faction][tx + x][ty + y]) {
+            tiles[faction][tx + x][ty + y] = true;
+            gameManager.addScoutedArea(faction);
+          }
         }
       }
     }

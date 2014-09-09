@@ -46,6 +46,7 @@ class SpawnerManager extends Manager {
         var spawnedEntity = world.createAndAddEntity(components);
         s.spawnTime = s.maxSpawnTime;
         fowManager.uncoverTiles(spawnedEntity);
+        gameManager.addSpawnedUnit(unit.faction);
       }
     }
   }

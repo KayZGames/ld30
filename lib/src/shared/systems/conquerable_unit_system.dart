@@ -25,6 +25,8 @@ class ConquerableUnitSystem extends EntityProcessingSystem {
     fowManager.uncoverTiles(entity);
     unitManager.factionUnits[oldFaction].remove(entity.id);
     unitManager.factionUnits[u.faction][entity.id] = entity;
+    gameManager.addConqueredCastle(u.faction);
+    gameManager.addLostCastle(oldFaction);
     if (sm.has(entity)) {
       spawnerManager.factionSpawner[oldFaction].remove(entity.id);
       spawnerManager.factionSpawner[u.faction][entity.id] = entity;
