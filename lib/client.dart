@@ -20,8 +20,9 @@ export 'package:gamedev_helpers/gamedev_helpers.dart';
                              MinimapRenderingSystem, FogOfWarRenderingSystem,
                              FogOfWarManager, MenuScreenRenderingSystem,
                              TurnMessageRenderingSystem, TileManager, GameManager,
+                             EndingScreenRenderingSystem
 
-                             DebugInfluenceRenderingSsystem
+//                             DebugInfluenceRenderingSsystem
                             ])
 import 'dart:mirrors';
 
@@ -37,6 +38,7 @@ part 'src/client/systems/selection_rendering_system.dart';
 part 'src/client/systems/buffer_to_canvas_rendering_system.dart';
 part 'src/client/systems/rendering_system.dart';
 part 'src/client/systems/input_handling_system.dart';
+part 'src/client/systems/ending_screen_rendering_system.dart';
 
 class Game extends GameBase {
   CanvasElement buffer;
@@ -79,6 +81,7 @@ class Game extends GameBase {
             new MinimapRenderingSystem(ctx),
             new TurnMessageRenderingSystem(ctx),
             new MenuScreenRenderingSystem(ctx),
+            new EndingScreenRenderingSystem(ctx, buffer),
 
             new KilledInActionSystem(),
             new AnalyticsSystem(AnalyticsSystem.GITHUB, 'ld30')
@@ -133,4 +136,16 @@ class Colors {
   static const PLUM = "#d77bba";
   static const RAIN_FOREST = "#8f974a";
   static const STINGER = "#8a6f30";
+
+
+  static const MENU_BACKGROUND = Colors.RAIN_FOREST;
+  static const MENU_BORDER = Colors.DEEP_KOAMARU;
+  static const MENU_LABEL = Colors.OPAL;
+  static const MENU_LABEL_SELECTED = Colors.HEATHER;
+  static const MENU_BUTTON = Colors.CHRISTI;
+  static const MENU_BUTTON_BORDER = Colors.VERDIGRIS;
+  static const MENU_BUTTON_SELECTED = Colors.DELL;
+  static const MENU_BUTTON_HIGHLIGHTED = Colors.ATLANTIS;
+  static const MENU_BUTTON_SELECTED_HIGHLIGHTED = Colors.ELF_GREEN;
 }
+

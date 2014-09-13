@@ -21,5 +21,5 @@ class SelectionRenderingSystem extends EntityProcessingSystem {
   }
 
   @override
-  bool checkProcessing() => gameManager.playerFaction == gameManager.currentFaction && !gameManager.menu;
+  bool checkProcessing() => gameManager.playerFaction == gameManager.currentFaction && gameManager.gameIsRunning;
 }

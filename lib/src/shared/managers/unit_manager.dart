@@ -41,13 +41,22 @@ class UnitManager extends Manager {
       var u = um.get(entity);
       unitCoords[t.x][t.y] = null;
       factionUnits[u.faction].remove(entity.id);
+      checkForDefeat(u.faction);
     }
   }
 
-  @override
-  void changed(Entity entity) {
-    if (mm.has(entity)) {
+  void switchFaction(Entity entity, String faction) {
+    var u = um.get(entity);
+    var oldFaction = u.faction;
+    factionUnits[u.faction].remove(entity.id);
+    factionUnits[faction][entity.id] = entity;
+    u.faction = faction;
+    checkForDefeat(oldFaction);
+  }
 
+  void checkForDefeat(String faction) {
+    if (factionUnits[faction].length == 0) {
+      gameManager.factionLost(faction);
     }
   }
 

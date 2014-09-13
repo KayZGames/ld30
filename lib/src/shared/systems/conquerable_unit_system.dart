@@ -18,25 +18,23 @@ class ConquerableUnitSystem extends EntityProcessingSystem {
     var d = dm.get(entity);
     var u = um.get(entity);
     var oldFaction = u.faction;
-    u.faction = d.faction;
-    entity..removeComponent(Defeated)
-          ..changedInWorld();
+    var newFaction = d.faction;
 
-    fowManager.uncoverTiles(entity);
-    unitManager.factionUnits[oldFaction].remove(entity.id);
-    unitManager.factionUnits[u.faction][entity.id] = entity;
-    gameManager.addConqueredCastle(u.faction);
-    gameManager.addLostCastle(oldFaction);
     if (sm.has(entity)) {
-      spawnerManager.factionSpawner[oldFaction].remove(entity.id);
-      spawnerManager.factionSpawner[u.faction][entity.id] = entity;
-      tileManager.growInfluence(entity, u.faction, captured: true);
+      spawnerManager.switchFaction(entity, newFaction);
+      tileManager.growInfluence(entity, newFaction, captured: true);
       u.health = u.maxHealth * 0.2;
     }
-    if (u.faction == gameManager.playerFaction) {
+    unitManager.switchFaction(entity, newFaction);
+    gameManager.addConqueredCastle(newFaction);
+    gameManager.addLostCastle(oldFaction);
+    fowManager.uncoverTiles(entity);
+    if (newFaction == gameManager.playerFaction) {
       eventBus.fire(new AnalyticsTrackEvent('Castle', 'conquered from $oldFaction'));
     } else if (oldFaction == gameManager.playerFaction) {
-      eventBus.fire(new AnalyticsTrackEvent('Castle', 'lost to ${u.faction}'));
+      eventBus.fire(new AnalyticsTrackEvent('Castle', 'lost to ${newFaction}'));
     }
+    entity..removeComponent(Defeated)
+          ..changedInWorld();
   }
 }

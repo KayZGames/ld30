@@ -2,6 +2,9 @@ part of shared;
 
 class GameManager extends Manager {
   final turnStatistics = <TurnStatistics>[new TurnStatistics()];
+  GameStatistics gameStatistics = new GameStatistics();
+  var gameOver = false;
+  var playerWon = false;
   int turn = 0;
   double startTime;
 
@@ -11,6 +14,8 @@ class GameManager extends Manager {
   int _player = FACTIONS.length - 1;
   String playerFaction = F_HELL;
   String currentFaction = FACTIONS[FACTIONS.length - 1];
+
+  bool get gameIsRunning => !menu && !gameOver;
 
   void startGame() {
     startTime = world.time;
@@ -70,6 +75,26 @@ class GameManager extends Manager {
   addDefeatedUnit(String faction) => turnStatistics[turn].defeatedUnits[faction] += 1;
   addSpawnedUnit(String faction) => turnStatistics[turn].spawnedUnits[faction] += 1;
   addScoutedArea(String faction) => turnStatistics[turn].scoutedArea[faction] += 1;
+
+  void initGameStatistics() {
+    gameStatistics = turnStatistics.fold(gameStatistics, (gameStatistic, turnStatistic) => gameStatistic..add(turnStatistic));
+  }
+
+  void factionLost(String faction) {
+    gameStatistics.defeatedInTurn[faction] = turn;
+    if (faction == playerFaction) {
+      initGameStatistics();
+      gameOver = true;
+    } else {
+      var playerHasWon = FACTIONS.where((faction) => faction != playerFaction)
+                                 .map((defeatedInTurn) => defeatedInTurn != null)
+                                 .firstWhere((bool hasWon) => false, orElse: () => true);
+      if (playerHasWon) {
+        gameOver = true;
+        playerWon = true;
+      }
+    }
+  }
 }
 
 class TurnStatistics {
@@ -84,4 +109,37 @@ class TurnStatistics {
   var ownedArea = {F_HELL: 0, F_HEAVEN: 0, F_FIRE: 0, F_ICE: 0};
   // TODO when more types of units with different strength exist
   var armyStrength = {F_HELL: 0, F_HEAVEN: 0, F_FIRE: 0, F_ICE: 0};
+
+  String toString() => '''lost units: $lostUnits 
+lost castles: $lostCastles 
+defeated units: $defeatedUnits
+conqured castles: $conqueredCastles
+spawned units: $spawnedUnits
+time: $timeAfterTurn
+scouted area: $scoutedArea
+owned area: $ownedArea
+army strength: $armyStrength
+
+''';
+}
+
+
+class GameStatistics extends Object with TurnStatistics {
+  var defeatedInTurn = <String, int>{F_HELL: null, F_HEAVEN: null, F_FIRE: null, F_ICE: null, F_NEUTRAL: null};
+
+  void add(TurnStatistics turnStatistics) {
+    join(armyStrength, turnStatistics.armyStrength);
+    join(conqueredCastles, turnStatistics.conqueredCastles);
+    join(defeatedUnits, turnStatistics.defeatedUnits);
+    join(lostCastles, turnStatistics.lostCastles);
+    join(lostUnits, turnStatistics.lostUnits);
+    join(ownedArea, turnStatistics.ownedArea);
+    join(scoutedArea, turnStatistics.scoutedArea);
+    join(spawnedUnits, turnStatistics.spawnedUnits);
+    join(timeAfterTurn, turnStatistics.timeAfterTurn);
+  }
+
+  void join(Map<String, num> gameStats, Map<String, num> turnStats) {
+    gameStats.keys.forEach((key) => gameStats[key] += turnStats[key]);
+  }
 }

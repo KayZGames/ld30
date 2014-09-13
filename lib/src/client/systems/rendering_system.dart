@@ -24,5 +24,5 @@ class RenderingSystem extends EntityProcessingSystem {
   }
 
   @override
-  bool checkProcessing() => !gameManager.menu;
+  bool checkProcessing() => gameManager.gameIsRunning;
 }

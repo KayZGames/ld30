@@ -15,5 +15,5 @@ class BufferToCanvasRenderingSystem extends EntityProcessingSystem {
   }
 
   @override
-  bool checkProcessing() => !gameManager.menu;
+  bool checkProcessing() => gameManager.gameIsRunning;
 }

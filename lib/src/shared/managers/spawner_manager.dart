@@ -50,4 +50,10 @@ class SpawnerManager extends Manager {
       }
     }
   }
+
+  void switchFaction(Entity entity, String faction) {
+      var u = um.get(entity);
+      factionSpawner[u.faction].remove(entity.id);
+      factionSpawner[faction][entity.id] = entity;
+  }
 }

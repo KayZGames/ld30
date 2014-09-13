@@ -107,5 +107,5 @@ class AiSystem extends VoidEntitySystem {
   }
 
   @override
-  bool checkProcessing() => gameManager.currentFaction != gameManager.playerFaction && !gameManager.menu;
+  bool checkProcessing() => gameManager.currentFaction != gameManager.playerFaction && gameManager.gameIsRunning;
 }

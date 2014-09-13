@@ -111,5 +111,5 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
   }
 
   @override
-  bool checkProcessing() => !gameManager.menu;
+  bool checkProcessing() => gameManager.gameIsRunning;
 }

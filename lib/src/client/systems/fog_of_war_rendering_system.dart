@@ -47,5 +47,5 @@ class FogOfWarRenderingSystem extends VoidEntitySystem {
   }
 
   @override
-  bool checkProcessing() => !gameManager.menu;
+  bool checkProcessing() => gameManager.gameIsRunning;
 }
