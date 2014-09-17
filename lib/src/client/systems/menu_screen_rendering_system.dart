@@ -26,7 +26,7 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
   /// to prevent scrolling
   var preventDefaultKeys = new Set.from([KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.SPACE]);
   var keyState = <int, bool>{};
-  var blockingKeys = new Set.from([KeyCode.UP, KeyCode.DOWN, KeyCode.ENTER]);
+  var blockingKeys = new Set.from([KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.ENTER]);
   var blockedKeys = new Set<int>();
 
   TagManager tagManager;
