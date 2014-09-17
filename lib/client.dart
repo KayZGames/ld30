@@ -84,7 +84,7 @@ class Game extends GameBase {
             new EndingScreenRenderingSystem(ctx),
 
             new KilledInActionSystem(),
-            new AnalyticsSystem(AnalyticsSystem.GITHUB, 'ld30')
+            new AnalyticsSystem(AnalyticsSystem.GITHUB, 'ld30-postcompo')
     ];
   }
 
