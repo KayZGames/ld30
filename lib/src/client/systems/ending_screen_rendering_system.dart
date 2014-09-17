@@ -4,6 +4,7 @@ class EndingScreenRenderingSystem extends VoidEntitySystem {
   var redrawBuffer = true;
   GameManager gameManager;
   CanvasRenderingContext2D ctx;
+  CanvasElement worldMap;
   CanvasElement buffer;
   CanvasRenderingContext2D bufferCtx;
   TileRenderingSystem trs;
@@ -22,6 +23,13 @@ class EndingScreenRenderingSystem extends VoidEntitySystem {
   @override
   void processSystem() {
     if (redrawBuffer) {
+      if (null == worldMap) {
+        worldMap = new CanvasElement(width: 500, height: 500);
+        worldMap.context2D..drawImageScaled(trs.buffer, 0, 0, 500, 500)
+                          ..drawImageScaled(rs.buffer, 0, 0, 500, 500)
+                          ..globalAlpha = 0.4
+                          ..drawImageScaled(fowrs.fogOfWar, 0, 0, 500, 500);
+      }
       var winLoseText = 'You have ${gameManager.playerWon ? 'WON' : 'LOST'} after ${gameManager.turn} turns';
       bufferCtx..save()
          ..fillStyle = Colors.MENU_BACKGROUND
@@ -33,10 +41,7 @@ class EndingScreenRenderingSystem extends VoidEntitySystem {
          ..strokeRect(0, 0, 800, 100)
          ..fillStyle = Colors.MENU_LABEL
          ..fillText(winLoseText, 400 - bufferCtx.measureText(winLoseText).width / 2, 40)
-         ..drawImageScaled(trs.buffer, 116, 100, 666, 500)
-         ..drawImageScaled(rs.buffer, 116, 100, 666, 500)
-         ..globalAlpha = 0.4
-         ..drawImageScaled(fowrs.fogOfWar, 116, 100, 666, 500)
+         ..drawImage(worldMap, 200, 100)
          ..restore();
       redrawBuffer = false;
     }
