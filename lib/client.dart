@@ -81,7 +81,7 @@ class Game extends GameBase {
             new MinimapRenderingSystem(ctx),
             new TurnMessageRenderingSystem(ctx),
             new MenuScreenRenderingSystem(ctx),
-            new EndingScreenRenderingSystem(ctx, buffer),
+            new EndingScreenRenderingSystem(ctx),
 
             new KilledInActionSystem(),
             new AnalyticsSystem(AnalyticsSystem.GITHUB, 'ld30')

@@ -4,10 +4,12 @@ class EndingScreenRenderingSystem extends VoidEntitySystem {
   var redrawBuffer = true;
   GameManager gameManager;
   CanvasRenderingContext2D ctx;
-  CanvasElement gameMap;
   CanvasElement buffer;
   CanvasRenderingContext2D bufferCtx;
-  EndingScreenRenderingSystem(this.ctx, this.gameMap);
+  TileRenderingSystem trs;
+  FogOfWarRenderingSystem fowrs;
+  RenderingSystem rs;
+  EndingScreenRenderingSystem(this.ctx);
 
   @override
   void initialize() {
@@ -20,7 +22,7 @@ class EndingScreenRenderingSystem extends VoidEntitySystem {
   @override
   void processSystem() {
     if (redrawBuffer) {
-      var winLoseText = 'You have ${gameManager.playerWon ? 'won' : 'lost'} after ${gameManager.turn} turns';
+      var winLoseText = 'You have ${gameManager.playerWon ? 'WON' : 'LOST'} after ${gameManager.turn} turns';
       bufferCtx..save()
          ..fillStyle = Colors.MENU_BACKGROUND
          ..strokeStyle = Colors.MENU_BORDER
@@ -31,7 +33,10 @@ class EndingScreenRenderingSystem extends VoidEntitySystem {
          ..strokeRect(0, 0, 800, 100)
          ..fillStyle = Colors.MENU_LABEL
          ..fillText(winLoseText, 400 - bufferCtx.measureText(winLoseText).width / 2, 40)
-         ..drawImageScaled(gameMap, 100, 100, 500, 500)
+         ..drawImageScaled(trs.buffer, 116, 100, 666, 500)
+         ..drawImageScaled(rs.buffer, 116, 100, 666, 500)
+         ..globalAlpha = 0.4
+         ..drawImageScaled(fowrs.fogOfWar, 116, 100, 666, 500)
          ..restore();
       redrawBuffer = false;
     }
