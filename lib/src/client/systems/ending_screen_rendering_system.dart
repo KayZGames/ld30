@@ -6,8 +6,10 @@ class EndingScreenRenderingSystem extends VoidEntitySystem {
   var keyState = <int, bool>{};
   var blockingKeys = new Set.from([KeyCode.UP, KeyCode.DOWN, KeyCode.ENTER]);
   var blockedKeys = new Set<int>();
+  var factionColors = {F_HEAVEN: Colors.GOLDEN_FIZZ, F_HELL: Colors.DEEP_KOAMARU, F_FIRE: Colors.MANDY, F_ICE: Colors.LIGHT_STEEL_BLUE, F_NEUTRAL: Colors.LIGHT_STEEL_BLUE};
 
   List<String> buttonLabels = <String>['World Map', 'Lost Units', 'Lost Castles', 'Defeated Units', 'Conquered Castles', 'Scouted Area'];
+  List<CanvasElement> graphs = new List<CanvasElement>(5);
   var redrawBuffer = true;
   var highlighted = 0;
   var selected = 0;
@@ -54,6 +56,18 @@ class EndingScreenRenderingSystem extends VoidEntitySystem {
                           ..drawImageScaled(rs.buffer, 0, 0, 550, 550)
                           ..globalAlpha = 0.4
                           ..drawImageScaled(fowrs.fogOfWar, 0, 0, 550, 550);
+        for (int i = 0; i < 5; i++) {
+          graphs[i] = new CanvasElement(width: 550, height: 550);
+          graphs[i].context2D..fillStyle = Colors.SMOKEY_ASH
+                             ..lineWidth = 2
+                             ..fillRect(0, 0, 550, 550);
+        }
+
+        drawGraph(graphs[0].context2D, (TurnStatistics turnStat) => turnStat.lostUnits);
+        drawGraph(graphs[1].context2D, (TurnStatistics turnStat) => turnStat.lostCastles);
+        drawGraph(graphs[2].context2D, (TurnStatistics turnStat) => turnStat.defeatedUnits);
+        drawGraph(graphs[3].context2D, (TurnStatistics turnStat) => turnStat.conqueredCastles);
+        drawGraph(graphs[4].context2D, (TurnStatistics turnStat) => turnStat.scoutedArea);
       }
       var winLoseText = 'You have ${gameManager.playerWon ? 'WON' : 'LOST'} after ${gameManager.turn} turns';
       bufferCtx..save()
@@ -78,11 +92,30 @@ class EndingScreenRenderingSystem extends VoidEntitySystem {
       buttonLabels.forEach((label) => drawButton(label, buttonCount++));
       redrawBuffer = false;
     }
-    updateButtons();
+    updateForSelection();
     ctx.drawImage(buffer, 0, 0);
   }
 
-  void updateButtons() {
+  void drawGraph(CanvasRenderingContext2D context, num attribute(TurnStatistics turnStats)) {
+    var turns = gameManager.turn;
+    var maxAmount = gameManager.gameStatistics.values.fold(0, (value, element) => max(value, attribute(element)));
+    gameManager.turnStatistics.forEach((faction, turnStatistics) {
+      var counter = 0;
+      var amount = 0;
+      context..beginPath()
+             ..strokeStyle = factionColors[faction]
+             ..moveTo(0, 550);
+      turnStatistics.forEach((turnStat) {
+        amount += attribute(turnStat);
+        context.lineTo(counter * 550 / turns, 550 - amount * 550 / maxAmount);
+        counter++;
+      });
+      context..stroke()
+             ..closePath();
+    });
+  }
+
+  void updateForSelection() {
     var lastHighlighted = highlighted;
     var lastSelected = selected;
     if (keyState[KeyCode.DOWN] == true) {
@@ -102,6 +135,13 @@ class EndingScreenRenderingSystem extends VoidEntitySystem {
     if (lastSelected != selected) {
       drawButton(buttonLabels[lastSelected], lastSelected);
       drawButton(buttonLabels[selected], selected);
+      switch (selected) {
+        case 0:
+          bufferCtx.drawImage(worldMap, 250, 50);
+          break;
+        default:
+          bufferCtx.drawImage(graphs[selected - 1], 250, 50);
+      }
     }
   }
 

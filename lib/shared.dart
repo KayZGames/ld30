@@ -35,3 +35,4 @@ const F_FIRE = 'fire';
 const F_ICE = 'ice';
 const F_NEUTRAL = 'neutral';
 const FACTIONS = const [F_HEAVEN, F_HELL, F_FIRE, F_ICE];
+const FACTIONS_PLUS_NEUTRAL = const [F_HEAVEN, F_HELL, F_FIRE, F_ICE, F_NEUTRAL];

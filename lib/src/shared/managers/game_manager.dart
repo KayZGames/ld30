@@ -1,8 +1,8 @@
 part of shared;
 
 class GameManager extends Manager {
-  final turnStatistics = <TurnStatistics>[new TurnStatistics()];
-  GameStatistics gameStatistics = new GameStatistics();
+  final Map<String, List<TurnStatistics>> turnStatistics = new Map.fromIterable(FACTIONS_PLUS_NEUTRAL, key: (faction) => faction, value: (_) => new List<TurnStatistics>.generate(1, (_) => new TurnStatistics()));
+  final Map<String, GameStatistics> gameStatistics = new Map.fromIterable(FACTIONS_PLUS_NEUTRAL, key: (faction) => faction, value: (_) => new GameStatistics());
   var gameOver = false;
   var playerWon = false;
   int turn = 0;
@@ -59,37 +59,42 @@ class GameManager extends Manager {
 
   void nextFaction() {
     _player = (_player + 1) % FACTIONS.length;
-    turnStatistics[turn].timeAfterTurn[currentFaction] = world.time;
+    turnStatistics[currentFaction][turn].timeAfterTurn = world.time;
     currentFaction = FACTIONS[_player];
     if (_player == 0) {
-      turnStatistics.add(new TurnStatistics());
+      FACTIONS_PLUS_NEUTRAL.forEach((faction) => turnStatistics[faction].add(new TurnStatistics()));
       turn++;
     }
   }
 
   int get maxTiles => sizeX * sizeY;
 
-  addLostUnit(String faction) => turnStatistics[turn].lostUnits[faction] += 1;
-  addLostCastle(String faction) => turnStatistics[turn].lostCastles[faction] += 1;
-  addConqueredCastle(String faction) => turnStatistics[turn].conqueredCastles[faction] += 1;
-  addDefeatedUnit(String faction) => turnStatistics[turn].defeatedUnits[faction] += 1;
-  addSpawnedUnit(String faction) => turnStatistics[turn].spawnedUnits[faction] += 1;
-  addScoutedArea(String faction) => turnStatistics[turn].scoutedArea[faction] += 1;
+  addLostUnit(String faction) => turnStatistics[faction][turn].lostUnits += 1;
+  addLostCastle(String faction) => turnStatistics[faction][turn].lostCastles += 1;
+  addConqueredCastle(String faction) => turnStatistics[faction][turn].conqueredCastles += 1;
+  addDefeatedUnit(String faction) => turnStatistics[faction][turn].defeatedUnits += 1;
+  addSpawnedUnit(String faction) => turnStatistics[faction][turn].spawnedUnits += 1;
+  addScoutedArea(String faction) => turnStatistics[faction][turn].scoutedArea += 1;
 
   void initGameStatistics() {
-    gameStatistics = turnStatistics.fold(gameStatistics, (gameStatistic, turnStatistic) => gameStatistic..add(turnStatistic));
+    gameStatistics.forEach((faction, gameStatsForFaction) {
+      turnStatistics[faction].forEach((turnStat) {
+        gameStatsForFaction.add(turnStat);
+      });
+    });
   }
 
   void factionLost(String faction) {
-    gameStatistics.defeatedInTurn[faction] = turn;
+    gameStatistics[faction].defeatedInTurn = turn;
     if (faction == playerFaction) {
       initGameStatistics();
       gameOver = true;
     } else {
       var playerHasWon = FACTIONS.where((faction) => faction != playerFaction)
-                                 .map((faction) => gameStatistics.defeatedInTurn[faction] != null)
+                                 .map((faction) => gameStatistics[faction].defeatedInTurn != null)
                                  .firstWhere((bool defeated) => !defeated, orElse: () => true);
       if (playerHasWon) {
+        initGameStatistics();
         gameOver = true;
         playerWon = true;
       }
@@ -98,17 +103,17 @@ class GameManager extends Manager {
 }
 
 class TurnStatistics {
-  var lostUnits = {F_HELL: 0, F_HEAVEN: 0, F_FIRE: 0, F_ICE: 0};
-  var lostCastles = {F_HELL: 0, F_HEAVEN: 0, F_FIRE: 0, F_ICE: 0, F_NEUTRAL: 0};
-  var defeatedUnits = {F_HELL: 0, F_HEAVEN: 0, F_FIRE: 0, F_ICE: 0, F_NEUTRAL: 0};
-  var conqueredCastles = {F_HELL: 0, F_HEAVEN: 0, F_FIRE: 0, F_ICE: 0};
-  var spawnedUnits = {F_HELL: 0, F_HEAVEN: 0, F_FIRE: 0, F_ICE: 0};
-  var timeAfterTurn = {F_HELL: 0.0, F_HEAVEN: 0.0, F_FIRE: 0.0, F_ICE: 0.0};
-  var scoutedArea = {F_HELL: 0, F_HEAVEN: 0, F_FIRE: 0, F_ICE: 0, F_NEUTRAL: 0};
+  var lostUnits = 0;
+  var lostCastles = 0;
+  var defeatedUnits = 0;
+  var conqueredCastles = 0;
+  var spawnedUnits = 0;
+  var timeAfterTurn = 0.0;
+  var scoutedArea = 0;
   // TODO once issue #26 is fixed
-  var ownedArea = {F_HELL: 0, F_HEAVEN: 0, F_FIRE: 0, F_ICE: 0};
+  var ownedArea = 0;
   // TODO when more types of units with different strength exist
-  var armyStrength = {F_HELL: 0, F_HEAVEN: 0, F_FIRE: 0, F_ICE: 0};
+  var armyStrength = 0;
 
   String toString() => '''lost units: $lostUnits 
 lost castles: $lostCastles 
@@ -125,21 +130,17 @@ army strength: $armyStrength
 
 
 class GameStatistics extends Object with TurnStatistics {
-  var defeatedInTurn = <String, int>{F_HELL: null, F_HEAVEN: null, F_FIRE: null, F_ICE: null, F_NEUTRAL: null};
+  var defeatedInTurn;
 
   void add(TurnStatistics turnStatistics) {
-    join(armyStrength, turnStatistics.armyStrength);
-    join(conqueredCastles, turnStatistics.conqueredCastles);
-    join(defeatedUnits, turnStatistics.defeatedUnits);
-    join(lostCastles, turnStatistics.lostCastles);
-    join(lostUnits, turnStatistics.lostUnits);
-    join(ownedArea, turnStatistics.ownedArea);
-    join(scoutedArea, turnStatistics.scoutedArea);
-    join(spawnedUnits, turnStatistics.spawnedUnits);
-    join(timeAfterTurn, turnStatistics.timeAfterTurn);
-  }
-
-  void join(Map<String, num> gameStats, Map<String, num> turnStats) {
-    gameStats.keys.forEach((key) => gameStats[key] += turnStats[key]);
+    armyStrength += turnStatistics.armyStrength;
+    conqueredCastles += turnStatistics.conqueredCastles;
+    defeatedUnits += turnStatistics.defeatedUnits;
+    lostCastles += turnStatistics.lostCastles;
+    lostUnits += turnStatistics.lostUnits;
+    ownedArea += turnStatistics.ownedArea;
+    scoutedArea += turnStatistics.scoutedArea;
+    spawnedUnits += turnStatistics.spawnedUnits;
+    timeAfterTurn += turnStatistics.timeAfterTurn;
   }
 }
