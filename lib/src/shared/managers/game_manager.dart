@@ -87,8 +87,8 @@ class GameManager extends Manager {
       gameOver = true;
     } else {
       var playerHasWon = FACTIONS.where((faction) => faction != playerFaction)
-                                 .map((defeatedInTurn) => defeatedInTurn != null)
-                                 .firstWhere((bool hasWon) => false, orElse: () => true);
+                                 .map((faction) => gameStatistics.defeatedInTurn[faction] != null)
+                                 .firstWhere((bool defeated) => !defeated, orElse: () => true);
       if (playerHasWon) {
         gameOver = true;
         playerWon = true;
