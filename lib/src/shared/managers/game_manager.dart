@@ -89,6 +89,8 @@ class GameManager extends Manager {
     if (faction == playerFaction) {
       initGameStatistics();
       gameOver = true;
+      eventBus.fire(new AnalyticsTrackEvent('player lost', faction));
+      eventBus.fire(new AnalyticsTrackEvent('turns played', '$turn'));
     } else {
       var playerHasWon = FACTIONS.where((faction) => faction != playerFaction)
                                  .map((faction) => gameStatistics[faction].defeatedInTurn != null)
@@ -97,6 +99,8 @@ class GameManager extends Manager {
         initGameStatistics();
         gameOver = true;
         playerWon = true;
+        eventBus.fire(new AnalyticsTrackEvent('player won', playerFaction));
+        eventBus.fire(new AnalyticsTrackEvent('turns played', '$turn'));
       }
     }
   }
