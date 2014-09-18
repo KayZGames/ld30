@@ -21,7 +21,9 @@ class AiSystem extends VoidEntitySystem {
 
   @override
   void initialize() {
-    terrainMap = new TerrainMap(gameManager, unitManager);
+    eventBus.on(GameStartedEvent).listen((_) {
+      terrainMap = new TerrainMap(gameManager, unitManager);
+    });
   }
 
   @override

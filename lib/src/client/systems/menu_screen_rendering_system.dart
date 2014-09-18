@@ -13,10 +13,10 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
                               OPTION_MAPSIZE: 0,
                               OPTION_START_GAME: 0};
   Map<int, int> optionCount = {OPTION_FACTION: 4,
-                               OPTION_MAPSIZE: 3,
+                               OPTION_MAPSIZE: 4,
                                OPTION_START_GAME: 1};
   Map<int, String> optionLabels = {OPTION_FACTION: ['Angelus', 'Abyssus', 'Ignis', 'Glacies'],
-                                   OPTION_MAPSIZE: ['Small', 'Medium', 'Large'],
+                                   OPTION_MAPSIZE: ['Tiny', 'Small', 'Normal', 'Large'],
                                    OPTION_START_GAME: ['Start Game']};
   Map<int, int> selected = {OPTION_FACTION: null,
                             OPTION_MAPSIZE: null};
@@ -85,6 +85,10 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
           case 1:
             gameManager.sizeX = 32;
             gameManager.sizeY = 32;
+            break;
+          case 2:
+            gameManager.sizeX = 48;
+            gameManager.sizeY = 48;
             break;
           default:
             gameManager.sizeX = 64;

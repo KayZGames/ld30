@@ -8,8 +8,8 @@ class GameManager extends Manager {
   int turn = 0;
   double startTime;
 
-  int sizeX = 64;
-  int sizeY = 64;
+  int sizeX;
+  int sizeY;
   bool menu = true;
   int _player = FACTIONS.length - 1;
   String playerFaction = F_HELL;
@@ -35,7 +35,7 @@ class GameManager extends Manager {
     List<int> freeTiles = new List.generate(sizeX * sizeY, (index) => index);
     freeTiles.removeWhere((value) => value % sizeY < 3 || value % sizeY > sizeX - 3 || value ~/ sizeX < 3 || value ~/ sizeX > sizeY - 3);
     int castles = 0;
-    while (freeTiles.length > 0 && castles < 40) {
+    while (freeTiles.length > 0 && castles < sizeX - 10) {
       var pos = freeTiles[random.nextInt(freeTiles.length)];
       var x = pos % sizeX;
       var y = pos ~/ sizeX;
