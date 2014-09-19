@@ -1,8 +1,11 @@
 part of shared;
 
 class GameManager extends Manager {
-  final Map<String, List<TurnStatistics>> turnStatistics = new Map.fromIterable(FACTIONS_PLUS_NEUTRAL, key: (faction) => faction, value: (_) => new List<TurnStatistics>.generate(1, (_) => new TurnStatistics()));
-  final Map<String, GameStatistics> gameStatistics = new Map.fromIterable(FACTIONS_PLUS_NEUTRAL, key: (faction) => faction, value: (_) => new GameStatistics());
+  TurnManager turnManager;
+  TagManager tagManager;
+
+  Map<String, List<TurnStatistics>> turnStatistics;
+  Map<String, GameStatistics> gameStatistics;
   var gameOver = false;
   var playerWon = false;
   int turn = 0;
@@ -11,14 +14,21 @@ class GameManager extends Manager {
   int sizeX;
   int sizeY;
   bool menu = true;
-  int _player = FACTIONS.length - 1;
-  String playerFaction = F_HELL;
-  String currentFaction = FACTIONS[FACTIONS.length - 1];
+  String playerFaction;
+  int _player;
+  String currentFaction;
 
   bool get gameIsRunning => !menu && !gameOver;
 
   void startGame() {
+    turnStatistics = new Map.fromIterable(FACTIONS_PLUS_NEUTRAL, key: (faction) => faction, value: (_) => new List<TurnStatistics>.generate(1, (_) => new TurnStatistics()));
+    gameStatistics = new Map.fromIterable(FACTIONS_PLUS_NEUTRAL, key: (faction) => faction, value: (_) => new GameStatistics());
     startTime = world.time;
+    turn = 0;
+    _player = FACTIONS.length - 1;
+    currentFaction = FACTIONS[_player];
+    playerWon = false;
+
     eventBus.fire(new GameStartedEvent(), sync: true);
     menu = false;
     for (int y = 0; y < sizeY; y++) {
@@ -56,6 +66,7 @@ class GameManager extends Manager {
     TileManager tileManager = world.getManager(TileManager);
     tileManager.initInfluence();
     FACTIONS.forEach((faction) => tileManager.spreadFactionInfluence(faction));
+    turnManager.nextTurn();
   }
 
   void nextFaction() {
@@ -103,24 +114,32 @@ class GameManager extends Manager {
   }
 
   void factionLost(String faction) {
-    gameStatistics[faction].defeatedInTurn = turn;
-    if (faction == playerFaction) {
-      initGameStatistics();
-      gameOver = true;
-      eventBus.fire(new AnalyticsTrackEvent('player lost', faction));
-      eventBus.fire(new AnalyticsTrackEvent('turns played', '$turn'));
-    } else {
-      var playerHasWon = FACTIONS.where((faction) => faction != playerFaction)
-                                 .map((faction) => gameStatistics[faction].defeatedInTurn != null)
-                                 .firstWhere((bool defeated) => !defeated, orElse: () => true);
-      if (playerHasWon) {
+    if (!menu) {
+      gameStatistics[faction].defeatedInTurn = turn;
+      if (faction == playerFaction) {
         initGameStatistics();
         gameOver = true;
-        playerWon = true;
-        eventBus.fire(new AnalyticsTrackEvent('player won', playerFaction));
+        eventBus.fire(new AnalyticsTrackEvent('player lost', faction));
         eventBus.fire(new AnalyticsTrackEvent('turns played', '$turn'));
+      } else {
+        var playerHasWon = FACTIONS.where((faction) => faction != playerFaction)
+                                   .map((faction) => gameStatistics[faction].defeatedInTurn != null)
+                                   .firstWhere((bool defeated) => !defeated, orElse: () => true);
+        if (playerHasWon) {
+          initGameStatistics();
+          gameOver = true;
+          playerWon = true;
+          eventBus.fire(new AnalyticsTrackEvent('player won', playerFaction));
+          eventBus.fire(new AnalyticsTrackEvent('turns played', '$turn'));
+        }
       }
     }
+  }
+
+  void restart() {
+    gameOver = false;
+    menu = true;
+    world.deleteAllEntities();
   }
 }
 

@@ -9,18 +9,14 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
   static final int OPTION_MAPSIZE = 1;
   static final int OPTION_START_GAME = 2;
 
-  Map<int, int> highlighted = {OPTION_FACTION: 0,
-                              OPTION_MAPSIZE: 0,
-                              OPTION_START_GAME: 0};
   Map<int, int> optionCount = {OPTION_FACTION: 4,
                                OPTION_MAPSIZE: 4,
                                OPTION_START_GAME: 1};
   Map<int, String> optionLabels = {OPTION_FACTION: ['Angelus', 'Abyssus', 'Ignis', 'Glacies'],
                                    OPTION_MAPSIZE: ['Tiny', 'Small', 'Normal', 'Large'],
                                    OPTION_START_GAME: ['Start Game']};
-  Map<int, int> selected = {OPTION_FACTION: null,
-                            OPTION_MAPSIZE: null};
-
+  Map<int, int> highlighted;
+  Map<int, int> selected;
   int selectedRow = 0;
 
   /// to prevent scrolling
@@ -41,6 +37,17 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
   void initialize() {
     window.onKeyDown.listen((event) => handleInput(event, true));
     window.onKeyUp.listen((event) => handleInput(event, false));
+    resetMenu();
+  }
+
+  void resetMenu() {
+    highlighted = {OPTION_FACTION: 0,
+                   OPTION_MAPSIZE: 0,
+                   OPTION_START_GAME: 0};
+    selected = {OPTION_FACTION: null,
+                OPTION_MAPSIZE: null};
+    selectedRow = 0;
+    keyState = <int, bool>{};
   }
 
   void handleInput(KeyboardEvent event, bool pressed) {
@@ -95,8 +102,8 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
             gameManager.sizeY = 64;
             break;
         }
-        var camera = tagManager.getEntity('camera');
-        var cameraTransform = tm.get(camera);
+
+        var cameraTransform = new Transform(0, 0);
         if (gameManager.playerFaction == F_HEAVEN) {
           cameraTransform.x = gameManager.sizeX * TILE_SIZE ~/ 2 - 400;
           cameraTransform.y = 0;
@@ -110,8 +117,11 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
           cameraTransform.x = gameManager.sizeX * TILE_SIZE - 800;
           cameraTransform.y = gameManager.sizeY * TILE_SIZE ~/ 2 - 300;
         }
+        var camera = world.createAndAddEntity([cameraTransform, new Camera()]);
+        tagManager.register(camera, 'camera');
         eventBus.fire(new AnalyticsTrackEvent('Faction selected', gameManager.playerFaction));
         gameManager.startGame();
+        resetMenu();
         return;
       } else if (selectedRow != OPTION_START_GAME) {
         selected[selectedRow] = highlighted[selectedRow];

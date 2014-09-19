@@ -9,11 +9,11 @@ class GameOverRenderingSystem extends VoidEntitySystem {
   var factionColors = {F_HEAVEN: Colors.GOLDEN_FIZZ, F_HELL: Colors.DEEP_KOAMARU, F_FIRE: Colors.MANDY, F_ICE: Colors.LIGHT_STEEL_BLUE, F_NEUTRAL: Colors.LIGHT_STEEL_BLUE};
   static final int GRAPH_COUNT = 7;
 
-  List<String> buttonLabels = <String>['World Map', 'Units', 'Castles', 'Lost Units', 'Lost Castles', 'Defeated Units', 'Conquered Castles', 'Scouted Area'];
+  List<String> buttonLabels = <String>['New Game', 'World Map', 'Units', 'Castles', 'Lost Units', 'Lost Castles', 'Defeated Units', 'Conquered Castles', 'Scouted Area'];
   List<CanvasElement> graphs = new List<CanvasElement>(GRAPH_COUNT);
-  var redrawBuffer = true;
-  var highlighted = 0;
-  var selected = 0;
+  var redrawBuffer;
+  var highlighted;
+  var selected;
   GameManager gameManager;
   CanvasRenderingContext2D ctx;
   CanvasElement worldMap;
@@ -32,6 +32,15 @@ class GameOverRenderingSystem extends VoidEntitySystem {
              ..textBaseline = 'top';
     window.onKeyDown.listen((event) => handleInput(event, true));
     window.onKeyUp.listen((event) => handleInput(event, false));
+    reset();
+  }
+
+  void reset() {
+    redrawBuffer = true;
+    highlighted = 1;
+    selected = 1;
+    worldMap = null;
+    keyState = <int, bool>{};
   }
 
   void handleInput(KeyboardEvent event, bool pressed) {
@@ -125,10 +134,10 @@ class GameOverRenderingSystem extends VoidEntitySystem {
     var lastHighlighted = highlighted;
     var lastSelected = selected;
     if (keyState[KeyCode.DOWN] == true) {
-      highlighted = (highlighted + 1) % (GRAPH_COUNT+1);
+      highlighted = (highlighted + 1) % (GRAPH_COUNT+2);
       keyState[KeyCode.DOWN] = false;
     } else if (keyState[KeyCode.UP] == true) {
-      highlighted = (highlighted - 1) % (GRAPH_COUNT+1);
+      highlighted = (highlighted - 1) % (GRAPH_COUNT+2);
       keyState[KeyCode.UP] = false;
     }
     if (keyState[KeyCode.ENTER] == true) {
@@ -143,10 +152,14 @@ class GameOverRenderingSystem extends VoidEntitySystem {
       drawButton(buttonLabels[selected], selected);
       switch (selected) {
         case 0:
+          reset();
+          gameManager.restart();
+          break;
+        case 1:
           bufferCtx.drawImage(worldMap, 250, 50);
           break;
         default:
-          bufferCtx.drawImage(graphs[selected - 1], 250, 50);
+          bufferCtx.drawImage(graphs[selected - 2], 250, 50);
       }
     }
   }

@@ -51,11 +51,7 @@ class Game extends GameBase {
     });
   }
 
-  void createEntities() {
-    TagManager tm = world.getManager(TagManager);
-    var camera = addEntity([new Transform(0, 0), new Camera()]);
-    tm.register(camera, 'camera');
-  }
+  void createEntities() {}
 
   List<EntitySystem> getSystems() {
     return [
