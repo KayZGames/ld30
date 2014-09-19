@@ -40,6 +40,7 @@ class GameManager extends Manager {
       var x = pos % sizeX;
       var y = pos ~/ sizeX;
       world.createAndAddEntity([new Transform(x, y), new Renderable('castle'), new Spawner(3), new Unit(F_NEUTRAL, 0, 0, 3), new Conquerable()]);
+      addConqueredCastle(F_NEUTRAL);
       castles++;
       for (int deltaX = -4; deltaX < 5; deltaX++) {
         for (int deltaY = -4; deltaY < 5; deltaY++) {
@@ -69,11 +70,28 @@ class GameManager extends Manager {
 
   int get maxTiles => sizeX * sizeY;
 
-  addLostUnit(String faction) => turnStatistics[faction][turn].lostUnits += 1;
-  addLostCastle(String faction) => turnStatistics[faction][turn].lostCastles += 1;
-  addConqueredCastle(String faction) => turnStatistics[faction][turn].conqueredCastles += 1;
+  void addLostUnit(String faction) {
+    turnStatistics[faction][turn].lostUnits += 1;
+    turnStatistics[faction][turn].units -= 1;
+  }
+
+  void addSpawnedUnit(String faction) {
+    turnStatistics[faction][turn].spawnedUnits += 1;
+    turnStatistics[faction][turn].units += 1;
+  }
+
+  void addLostCastle(String faction) {
+    turnStatistics[faction][turn].lostCastles += 1;
+    turnStatistics[faction][turn].castles -= 1;
+  }
+
+  void addConqueredCastle(String faction) {
+    turnStatistics[faction][turn].conqueredCastles += 1;
+    turnStatistics[faction][turn].castles += 1;
+  }
+
+
   addDefeatedUnit(String faction) => turnStatistics[faction][turn].defeatedUnits += 1;
-  addSpawnedUnit(String faction) => turnStatistics[faction][turn].spawnedUnits += 1;
   addScoutedArea(String faction) => turnStatistics[faction][turn].scoutedArea += 1;
 
   void initGameStatistics() {
@@ -107,6 +125,8 @@ class GameManager extends Manager {
 }
 
 class TurnStatistics {
+  var units = 0;
+  var castles = 0;
   var lostUnits = 0;
   var lostCastles = 0;
   var defeatedUnits = 0;
@@ -135,6 +155,8 @@ army strength: $armyStrength
 
 class GameStatistics extends Object with TurnStatistics {
   var defeatedInTurn;
+  var maxUnits = 0;
+  var maxCastles = 0;
 
   void add(TurnStatistics turnStatistics) {
     armyStrength += turnStatistics.armyStrength;
@@ -146,5 +168,9 @@ class GameStatistics extends Object with TurnStatistics {
     scoutedArea += turnStatistics.scoutedArea;
     spawnedUnits += turnStatistics.spawnedUnits;
     timeAfterTurn += turnStatistics.timeAfterTurn;
+    units += turnStatistics.units;
+    castles += turnStatistics.castles;
+    maxUnits = max(maxUnits, units);
+    maxCastles = max(maxCastles, units);
   }
 }
