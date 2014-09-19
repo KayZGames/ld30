@@ -1,6 +1,6 @@
 part of client;
 
-class EndingScreenRenderingSystem extends VoidEntitySystem {
+class GameOverRenderingSystem extends VoidEntitySystem {
   /// to prevent scrolling
   var preventDefaultKeys = new Set.from([KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.SPACE]);
   var keyState = <int, bool>{};
@@ -21,7 +21,7 @@ class EndingScreenRenderingSystem extends VoidEntitySystem {
   TileRenderingSystem trs;
   FogOfWarRenderingSystem fowrs;
   RenderingSystem rs;
-  EndingScreenRenderingSystem(this.ctx);
+  GameOverRenderingSystem(this.ctx);
 
   @override
   void initialize() {

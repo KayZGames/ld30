@@ -6,8 +6,6 @@ export 'dart:html' hide Player, Timeline;
 import 'package:ld30/shared.dart';
 export 'package:ld30/shared.dart';
 
-import 'package:canvas_query/canvas_query.dart';
-export 'package:canvas_query/canvas_query.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 export 'package:gamedev_helpers/gamedev_helpers.dart';
 
@@ -20,7 +18,7 @@ export 'package:gamedev_helpers/gamedev_helpers.dart';
                              MinimapRenderingSystem, FogOfWarRenderingSystem,
                              FogOfWarManager, MenuScreenRenderingSystem,
                              TurnMessageRenderingSystem, TileManager, GameManager,
-                             EndingScreenRenderingSystem
+                             GameOverRenderingSystem
 
 //                             DebugInfluenceRenderingSsystem
                             ])
@@ -38,7 +36,7 @@ part 'src/client/systems/selection_rendering_system.dart';
 part 'src/client/systems/buffer_to_canvas_rendering_system.dart';
 part 'src/client/systems/rendering_system.dart';
 part 'src/client/systems/input_handling_system.dart';
-part 'src/client/systems/ending_screen_rendering_system.dart';
+part 'src/client/systems/game_over_rendering_system.dart';
 
 class Game extends GameBase {
   CanvasElement buffer;
@@ -81,7 +79,7 @@ class Game extends GameBase {
             new MinimapRenderingSystem(ctx),
             new TurnMessageRenderingSystem(ctx),
             new MenuScreenRenderingSystem(ctx),
-            new EndingScreenRenderingSystem(ctx),
+            new GameOverRenderingSystem(ctx),
 
             new KilledInActionSystem(),
             new AnalyticsSystem(AnalyticsSystem.GITHUB, 'ld30-postcompo')
