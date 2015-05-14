@@ -1,7 +1,7 @@
 part of client;
 
 class TurnMessageRenderingSystem extends EntityProcessingSystem {
-  ComponentMapper<NextTurnInfo> im;
+  Mapper<NextTurnInfo> im;
   GameManager gameManager;
 
   CanvasRenderingContext2D ctx;
@@ -10,7 +10,7 @@ class TurnMessageRenderingSystem extends EntityProcessingSystem {
 
   @override
   void processEntity(Entity entity) {
-    var info = im.get(entity);
+    var info = im[entity];
 
     info.timer -= world.delta;
     if (info.timer <= 0.0) {
@@ -20,7 +20,7 @@ class TurnMessageRenderingSystem extends EntityProcessingSystem {
 
     String infoText = getInfoText();
     ctx..save()
-       ..globalAlpha = info.timer / 1000.0
+       ..globalAlpha = info.timer * 10.0
        ..fillStyle = 'grey'
        ..font = '20px Verdana'
        ..fillText(infoText, 400 - ctx.measureText(infoText).width / 2, 290)

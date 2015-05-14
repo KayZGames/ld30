@@ -1,13 +1,13 @@
 part of shared;
 
 class UnitManager extends Manager {
-  ComponentMapper<Unit> um;
-  ComponentMapper<Selected> sm;
-  ComponentMapper<Transform> tm;
-  ComponentMapper<Move> mm;
-  ComponentMapper<Attacker> am;
-  ComponentMapper<Defender> defenderMapper;
-  ComponentMapper<Defeated> defeatedMapper;
+  Mapper<Unit> um;
+  Mapper<Selected> sm;
+  Mapper<Transform> tm;
+  Mapper<Move> mm;
+  Mapper<Attacker> am;
+  Mapper<Defender> defenderMapper;
+  Mapper<Defeated> defeatedMapper;
   GameManager gameManager;
   List<List<Entity>> unitCoords;
   Map<String, Map<int, Entity>> factionUnits = {F_HELL: <int, Entity>{},
@@ -27,8 +27,8 @@ class UnitManager extends Manager {
   @override
   void added(Entity entity) {
     if (um.has(entity)) {
-      var t = tm.get(entity);
-      var u = um.get(entity);
+      var t = tm[entity];
+      var u = um[entity];
       unitCoords[t.x][t.y] = entity;
       factionUnits[u.faction][entity.id] = entity;
     }
@@ -37,8 +37,8 @@ class UnitManager extends Manager {
   @override
   void deleted(Entity entity) {
     if (um.has(entity)) {
-      var t = tm.get(entity);
-      var u = um.get(entity);
+      var t = tm[entity];
+      var u = um[entity];
       unitCoords[t.x][t.y] = null;
       factionUnits[u.faction].remove(entity.id);
       checkForDefeat(u.faction);
@@ -46,7 +46,7 @@ class UnitManager extends Manager {
   }
 
   void switchFaction(Entity entity, String faction) {
-    var u = um.get(entity);
+    var u = um[entity];
     var oldFaction = u.faction;
     factionUnits[u.faction].remove(entity.id);
     factionUnits[faction][entity.id] = entity;
@@ -78,7 +78,7 @@ class UnitManager extends Manager {
           orElse: () => factionUnits[faction].values.firstWhere(canMove, orElse: () => selected));
   }
 
-  bool canMove(Entity entity) => um.get(entity).movesLeft > 0;
+  bool canMove(Entity entity) => um[entity].movesLeft > 0;
 
 
   Entity getSelectedUnit(String faction) =>
@@ -89,7 +89,7 @@ class UnitManager extends Manager {
   bool isFriendlyUnit(String faction, int x, int y) {
     var entity = unitCoords[x][y];
     if (null != entity) {
-      return um.get(entity).faction == faction;
+      return um[entity].faction == faction;
     }
     return false;
   }

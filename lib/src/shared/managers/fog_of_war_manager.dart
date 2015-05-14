@@ -1,8 +1,8 @@
 part of shared;
 
 class FogOfWarManager extends Manager {
-  ComponentMapper<Unit> um;
-  ComponentMapper<Transform> tm;
+  Mapper<Unit> um;
+  Mapper<Transform> tm;
   GameManager gameManager;
   bool hasChanges = false;
 
@@ -21,8 +21,8 @@ class FogOfWarManager extends Manager {
   }
 
   void uncoverTiles(Entity entity) {
-    var t = tm.get(entity);
-    var u = um.get(entity);
+    var t = tm[entity];
+    var u = um[entity];
     var faction = u.faction;
     var tx = t.x;
     var ty = t.y;

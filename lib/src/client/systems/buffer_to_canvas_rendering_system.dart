@@ -1,7 +1,7 @@
 part of client;
 
 class BufferToCanvasRenderingSystem extends EntityProcessingSystem {
-  ComponentMapper<Transform> tm;
+  Mapper<Transform> tm;
   GameManager gameManager;
 
   CanvasRenderingContext2D ctx;
@@ -10,7 +10,7 @@ class BufferToCanvasRenderingSystem extends EntityProcessingSystem {
 
   @override
   void processEntity(Entity entity) {
-    var t = tm.get(entity);
+    var t = tm[entity];
     ctx.drawImageScaledFromSource(buffer, t.x, t.y, 800, 600, 0, 0, 800, 600);
   }
 

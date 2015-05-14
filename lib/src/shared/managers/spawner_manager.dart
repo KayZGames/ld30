@@ -1,9 +1,9 @@
 part of shared;
 
 class SpawnerManager extends Manager {
-  ComponentMapper<Transform> tm;
-  ComponentMapper<Spawner> sm;
-  ComponentMapper<Unit> um;
+  Mapper<Transform> tm;
+  Mapper<Spawner> sm;
+  Mapper<Unit> um;
   UnitManager unitManager;
   FogOfWarManager fowManager;
   GameManager gameManager;
@@ -20,7 +20,7 @@ class SpawnerManager extends Manager {
   @override
   void added(Entity entity) {
     if (sm.has(entity)) {
-      var u = um.get(entity);
+      var u = um[entity];
       factionSpawner[u.faction][entity.id] = entity;
     }
   }
@@ -28,18 +28,18 @@ class SpawnerManager extends Manager {
   @override
   void deleted(Entity entity) {
     if (sm.has(entity)) {
-      var u = um.get(entity);
+      var u = um[entity];
       factionSpawner[u.faction].remove(entity.id);
     }
   }
 
   void spawn(Entity entity) {
-    var s = sm.get(entity);
+    var s = sm[entity];
     if (s.spawnTime <= 0) {
-      var t = tm.get(entity);
+      var t = tm[entity];
       var coords = spawnArea.firstWhere((xy) => unitManager.isTileEmpty(t.x + xy[0], t.y + xy[1]), orElse: () => <int>[]);
       if (coords.isNotEmpty) {
-        var unit = um.get(entity);
+        var unit = um[entity];
         var components = [new Transform(t.x + coords[0], t.y + coords[1]),
                           new Unit(unit.faction, 5, unit.level, 2),
                           new Renderable('peasant')];
@@ -52,7 +52,7 @@ class SpawnerManager extends Manager {
   }
 
   void switchFaction(Entity entity, String faction) {
-      var u = um.get(entity);
+      var u = um[entity];
       factionSpawner[u.faction].remove(entity.id);
       factionSpawner[faction][entity.id] = entity;
   }

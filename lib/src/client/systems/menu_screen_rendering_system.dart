@@ -27,7 +27,7 @@ class MenuScreenRenderingSystem extends VoidEntitySystem {
 
   TagManager tagManager;
   GameManager gameManager;
-  ComponentMapper<Transform> tm;
+  Mapper<Transform> tm;
 
   CanvasRenderingContext2D ctx;
 

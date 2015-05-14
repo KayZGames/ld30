@@ -23,7 +23,7 @@ class GameManager extends Manager {
   void startGame() {
     turnStatistics = new Map.fromIterable(FACTIONS_PLUS_NEUTRAL, key: (faction) => faction, value: (_) => new List<TurnStatistics>.generate(1, (_) => new TurnStatistics()));
     gameStatistics = new Map.fromIterable(FACTIONS_PLUS_NEUTRAL, key: (faction) => faction, value: (_) => new GameStatistics());
-    startTime = world.time;
+    startTime = world.time(0);
     turn = 0;
     _player = FACTIONS.length - 1;
     currentFaction = FACTIONS[_player];
@@ -71,7 +71,7 @@ class GameManager extends Manager {
 
   void nextFaction() {
     _player = (_player + 1) % FACTIONS.length;
-    turnStatistics[currentFaction][turn].timeAfterTurn = world.time;
+    turnStatistics[currentFaction][turn].timeAfterTurn = world.time(0);
     currentFaction = FACTIONS[_player];
     if (_player == 0) {
       FACTIONS_PLUS_NEUTRAL.forEach((faction) => turnStatistics[faction].add(new TurnStatistics()));

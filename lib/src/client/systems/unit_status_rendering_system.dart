@@ -1,8 +1,8 @@
 part of client;
 
 class UnitStatusRenderingSystem extends EntityProcessingSystem {
-  ComponentMapper<Transform> tm;
-  ComponentMapper<Unit> um;
+  Mapper<Transform> tm;
+  Mapper<Unit> um;
   GameManager gameManager;
 
   CanvasRenderingContext2D ctx;
@@ -22,8 +22,8 @@ class UnitStatusRenderingSystem extends EntityProcessingSystem {
 
   @override
   void processEntity(Entity entity) {
-    var t = tm.get(entity);
-    var u = um.get(entity);
+    var t = tm[entity];
+    var u = um[entity];
 
     var ratio = u.health / u.maxHealth;
     ctx..setFillColorRgb((255 * (1-ratio)).toInt(), (255 * ratio).toInt(), (100 * ratio).toInt())

@@ -1,9 +1,9 @@
 part of shared;
 
 class TileManager extends Manager {
-  ComponentMapper<Tile> tileMapper;
-  ComponentMapper<Transform> tm;
-  ComponentMapper<Unit> um;
+  Mapper<Tile> tileMapper;
+  Mapper<Transform> tm;
+  Mapper<Unit> um;
   SpawnerManager spawnerManager;
   GameManager gameManager;
 
@@ -21,7 +21,7 @@ class TileManager extends Manager {
   @override
   void added(Entity entity) {
     if (tileMapper.has(entity)) {
-      var t = tm.get(entity);
+      var t = tm[entity];
       var x = t.x;
       var y = t.y;
       tilesByCoord[x][y] = entity;
@@ -32,38 +32,36 @@ class TileManager extends Manager {
 
 
   void growInfluence(Entity unitEntity, String faction, {bool captured: false}) {
-    var t = tm.get(unitEntity);
+    var t = tm[unitEntity];
     var tile = tilesByCoord[t.x][t.y];
-    var unit = um.get(unitEntity);
-    var currentFaction = tileMapper.get(tile).faction;
+    var unit = um[unitEntity];
     if (!captured) {
       unit.influenceWeight += 0.1;
     } else {
-      tileMapper.get(tile).faction = faction;
-      tileMapper.get(tile).influence = unit.influence;
+      tileMapper[tile].faction = faction;
+      tileMapper[tile].influence = unit.influence;
       unit.influenceWeight = 1.0;
       tile..addComponent(new Redraw())
           ..changedInWorld();
     }
     var baseInfluence = unit.influence * unit.influenceWeight;
-    tileMapper.get(tile).influence = baseInfluence;
+    tileMapper[tile].influence = baseInfluence;
 
     var visited = <int>[];
     var open = new Queue<int>()..add(t.y * gameManager.sizeX + t.x);
     while (open.isNotEmpty) {
       var currentTileId = open.removeFirst();
-      var currentTile = tileMapper.get(tiles[currentTileId]);
+      var currentTile = tileMapper[tiles[currentTileId]];
       var distance = ((currentTileId % gameManager.sizeX - t.x).abs() + (currentTileId ~/ gameManager.sizeX - t.y).abs()) + 1;
       var newInfluence = baseInfluence * INFLUENCE_FACTOR / (distance * distance);
       visitTile(currentTileId, visited, open, (nextTileId) {
-        var nextTile = tileMapper.get(tiles[nextTileId]);
         if (faction != currentTile.faction) {
           return false;
         }
         return true;
       }, (nextTileId) {
         var nextTileEntity = tiles[nextTileId];
-        var nextTile = tileMapper.get(nextTileEntity);
+        var nextTile = tileMapper[nextTileEntity];
         var oldFaction = nextTile.faction;
         if (oldFaction != faction) {
           if (nextTile.influence < newInfluence) {

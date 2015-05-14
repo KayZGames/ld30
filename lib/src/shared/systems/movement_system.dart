@@ -2,9 +2,9 @@ part of shared;
 
 class MovementSystem extends EntityProcessingSystem {
   UnitManager unitManager;
-  ComponentMapper<Unit> um;
-  ComponentMapper<Transform> tm;
-  ComponentMapper<Move> mm;
+  Mapper<Unit> um;
+  Mapper<Transform> tm;
+  Mapper<Move> mm;
 
   FogOfWarManager fowManager;
   TagManager tagManager;
@@ -15,10 +15,10 @@ class MovementSystem extends EntityProcessingSystem {
 
   @override
   void processEntity(Entity entity) {
-    var u = um.get(entity);
+    var u = um[entity];
     if (u.movesLeft > 0) {
-      var t = tm.get(entity);
-      var m = mm.get(entity);
+      var t = tm[entity];
+      var m = mm[entity];
       var targetX = t.x + m.x;
       var targetY = t.y + m.y;
       if (targetX >= 0 && targetY >= 0 && targetX < gameManager.sizeX && targetY < gameManager.sizeY) {
@@ -32,7 +32,7 @@ class MovementSystem extends EntityProcessingSystem {
           fowManager.uncoverTiles(entity);
           if (gameManager.currentFaction == gameManager.playerFaction) {
             var camera = tagManager.getEntity('camera');
-            var cameraTransform = tm.get(camera);
+            var cameraTransform = tm[camera];
             cameraTransform.x = t.x * TILE_SIZE - 400;
             cameraTransform.y = t.y * TILE_SIZE - 300;
           }
@@ -41,7 +41,7 @@ class MovementSystem extends EntityProcessingSystem {
             // try again next iteration
             return;
           }
-          var otherUnit = um.get(targetEntity);
+          var otherUnit = um[targetEntity];
           if (otherUnit.faction != u.faction) {
             targetEntity..addComponent(new Defender(-m.x, -m.y))
                         ..changedInWorld();

@@ -6,7 +6,11 @@ dependencies:
   canvas_query: any
   dart_to_js_script_rewriter: any
   gamedev_helpers:
-    git: https://github.com/denniskaselow/gamedev_helpers
-  hop: any
+    path: ../gamedev_helpers
+  dartemis: any
+  dartemis_transformer: any
 transformers:
 - dart_to_js_script_rewriter
+- dartemis_transformer:
+    additionalLibraries:
+    - gamedev_helpers/gamedev_helpers.dart

@@ -3,17 +3,17 @@ part of shared;
 class AiSystem extends VoidEntitySystem {
   final directions = <List<int>>[[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]];
 
-  ComponentMapper<Transform> tm;
-  ComponentMapper<Move> mm;
-  ComponentMapper<Attacker> am;
-  ComponentMapper<Defender> dm;
+  Mapper<Transform> tm;
+  Mapper<Move> mm;
+  Mapper<Attacker> am;
+  Mapper<Defender> dm;
 
   UnitManager unitManager;
   TurnManager turnManager;
   FogOfWarManager fowManager;
   GameManager gameManager;
 
-  ComponentMapper<Unit> um;
+  Mapper<Unit> um;
 
   Bag<int> targetTiles = new Bag<int>();
   Bag<Queue<TerrainTile>> targetPath = new Bag<Queue<TerrainTile>>();
@@ -35,7 +35,7 @@ class AiSystem extends VoidEntitySystem {
   void processSystem() {
     var faction = gameManager.currentFaction;
     var entity = unitManager.getSelectedUnit(faction);
-    if (entity == null || um.get(entity).movesLeft <= 0) {
+    if (entity == null || um[entity].movesLeft <= 0) {
       entity = unitManager.getNextUnit(faction);
     }
     if (null == entity) {
@@ -44,7 +44,7 @@ class AiSystem extends VoidEntitySystem {
       // entity is still occupied
       return;
     } else {
-      var t = tm.get(entity);
+      var t = tm[entity];
       var target = null;
       if (targetTiles.isIndexWithinBounds(entity.id)) {
         target = targetTiles[entity.id];

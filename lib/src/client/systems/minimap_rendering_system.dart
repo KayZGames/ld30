@@ -3,8 +3,8 @@ part of client;
 class MinimapRenderingSystem extends EntityProcessingSystem {
   int baseX;
   int baseY;
-  ComponentMapper<Unit> um;
-  ComponentMapper<Transform> tm;
+  Mapper<Unit> um;
+  Mapper<Transform> tm;
   TagManager tagManager;
   FogOfWarRenderingSystem fowrs;
   GameManager gameManager;
@@ -33,7 +33,7 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
     ctx.drawImageScaled(fowrs.fogOfWarMini, baseX, baseY, gameManager.sizeX * 2, gameManager.sizeY * 2);
 
     var camera = tagManager.getEntity('camera');
-    var cameraTransform = tm.get(camera);
+    var cameraTransform = tm[camera];
     ctx..setStrokeColorRgb(150, 150, 150)
        ..lineWidth = 1
        ..strokeRect(1+baseX + cameraTransform.x / TILE_SIZE * 2, 1+baseY + cameraTransform.y / TILE_SIZE * 2, 800 / TILE_SIZE * 2, 600 / TILE_SIZE * 2)
@@ -43,8 +43,8 @@ class MinimapRenderingSystem extends EntityProcessingSystem {
 
   @override
   void processEntity(Entity entity) {
-    var t = tm.get(entity);
-    var u = um.get(entity);
+    var t = tm[entity];
+    var u = um[entity];
 
     if (u.faction == gameManager.playerFaction) {
       ctx.setFillColorRgb(0, 255, 0);

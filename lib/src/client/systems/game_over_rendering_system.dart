@@ -166,7 +166,6 @@ class GameOverRenderingSystem extends VoidEntitySystem {
 
   void drawButton(String text, int index) {
     var fillStyle = Colors.MENU_BUTTON;
-    var labelFillStyle = Colors.MENU_LABEL;
     if (selected == index) {
       fillStyle = Colors.MENU_BUTTON_SELECTED;
     }
@@ -174,7 +173,6 @@ class GameOverRenderingSystem extends VoidEntitySystem {
       fillStyle = Colors.MENU_BUTTON_HIGHLIGHTED;
       if (selected == index) {
         fillStyle = Colors.MENU_BUTTON_SELECTED_HIGHLIGHTED;
-        labelFillStyle = Colors.MENU_LABEL_SELECTED;
       }
     }
     _drawButton(text, 20, 75 + index * 50, 210, 30, fillStyle, Colors.MENU_LABEL);

@@ -1,17 +1,17 @@
 part of shared;
 
 class TurnManager extends Manager {
-  ComponentMapper<Unit> um;
-  ComponentMapper<Spawner> sm;
-  ComponentMapper<Conquerable> cm;
+  Mapper<Unit> um;
+  Mapper<Spawner> sm;
+  Mapper<Conquerable> cm;
   UnitManager unitManager;
   TileManager tileManager;
   SpawnerManager spawnerManager;
   GameManager gameManager;
 
   void nextTurn() {
-    unitManager.factionUnits[gameManager.currentFaction]..values.forEach((entity) => um.get(entity).nextTurn());
-    spawnerManager.factionSpawner[gameManager.currentFaction].values.forEach((entity) => sm.get(entity).spawnTime--);
+    unitManager.factionUnits[gameManager.currentFaction]..values.forEach((entity) => um[entity].nextTurn());
+    spawnerManager.factionSpawner[gameManager.currentFaction].values.forEach((entity) => sm[entity].spawnTime--);
 
     gameManager.nextFaction();
 
@@ -24,7 +24,7 @@ class TurnManager extends Manager {
 
   void recoverConquarable(Entity entity) {
     if (cm.has(entity)) {
-      var u = um.get(entity);
+      var u = um[entity];
       if (u.health < u.maxHealth) {
         u.health = min(u.health + u.maxHealth * 0.2, u.maxHealth);
       }

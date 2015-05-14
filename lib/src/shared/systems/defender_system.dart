@@ -1,15 +1,15 @@
 part of shared;
 
 class DefenderSystem extends EntityProcessingSystem {
-  ComponentMapper<Defender> dm;
-  ComponentMapper<Transform> tm;
+  Mapper<Defender> dm;
+  Mapper<Transform> tm;
 
   DefenderSystem() : super(Aspect.getAspectForAllOf([Transform, Defender]));
 
   @override
   void processEntity(Entity entity) {
-    var d = dm.get(entity);
-    var t = tm.get(entity);
+    var d = dm[entity];
+    var t = tm[entity];
 
     d.duration -= world.delta;
     if (d.duration <= 0.0) {

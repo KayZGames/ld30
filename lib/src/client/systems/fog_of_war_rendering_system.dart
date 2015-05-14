@@ -3,7 +3,7 @@ part of client;
 class FogOfWarRenderingSystem extends VoidEntitySystem {
   FogOfWarManager fowManager;
   TagManager tagManager;
-  ComponentMapper<Transform> tm;
+  Mapper<Transform> tm;
   GameManager gameManager;
 
   CanvasRenderingContext2D ctx;
@@ -41,7 +41,7 @@ class FogOfWarRenderingSystem extends VoidEntitySystem {
                         ..drawImageScaled(fogOfWarMini, 0, 0, gameManager.sizeX * TILE_SIZE, gameManager.sizeY * TILE_SIZE);
     }
     var camera = tagManager.getEntity('camera');
-    var t = tm.get(camera);
+    var t = tm[camera];
 
     ctx.drawImageScaledFromSource(fogOfWar, t.x, t.y, 800, 600, t.x, t.y, 800, 600);
   }

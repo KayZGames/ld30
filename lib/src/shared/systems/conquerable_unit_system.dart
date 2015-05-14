@@ -1,9 +1,9 @@
 part of shared;
 
 class ConquerableUnitSystem extends EntityProcessingSystem {
-  ComponentMapper<Unit> um;
-  ComponentMapper<Defeated> dm;
-  ComponentMapper<Spawner> sm;
+  Mapper<Unit> um;
+  Mapper<Defeated> dm;
+  Mapper<Spawner> sm;
 
   UnitManager unitManager;
   SpawnerManager spawnerManager;
@@ -15,8 +15,8 @@ class ConquerableUnitSystem extends EntityProcessingSystem {
 
   @override
   void processEntity(Entity entity) {
-    var d = dm.get(entity);
-    var u = um.get(entity);
+    var d = dm[entity];
+    var u = um[entity];
     var oldFaction = u.faction;
     var newFaction = d.faction;
 

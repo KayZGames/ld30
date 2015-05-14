@@ -1,9 +1,9 @@
 part of client;
 
 class RenderingSystem extends EntityProcessingSystem {
-  ComponentMapper<Transform> tm;
-  ComponentMapper<Renderable> rm;
-  ComponentMapper<Unit> um;
+  Mapper<Transform> tm;
+  Mapper<Renderable> rm;
+  Mapper<Unit> um;
   GameManager gameManager;
   TagManager tagManager;
 
@@ -28,9 +28,9 @@ class RenderingSystem extends EntityProcessingSystem {
 
   @override
   void processEntity(Entity entity) {
-    var t = tm.get(entity);
-    var r = rm.get(entity);
-    var u = um.get(entity);
+    var t = tm[entity];
+    var r = rm[entity];
+    var u = um[entity];
 
     var sprite = sheet.sprites['${r.name}_${u.faction}'];
     bufferCtx.drawImageScaledFromSource(sheet.image, sprite.src.left, sprite.src.top, sprite.src.width, sprite.src.height,
@@ -42,7 +42,7 @@ class RenderingSystem extends EntityProcessingSystem {
   @override
   void end() {
     var cameraEntity = tagManager.getEntity('camera');
-    var cameraTransform = tm.get(cameraEntity);
+    var cameraTransform = tm[cameraEntity];
     var cameraRect = new Rectangle(cameraTransform.x, cameraTransform.y, 800, 600);
     ctx.drawImageToRect(buffer, cameraRect, sourceRect: cameraRect);
   }

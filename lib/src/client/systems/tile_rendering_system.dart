@@ -1,8 +1,8 @@
 part of client;
 
 class TileRenderingSystem extends EntityProcessingSystem {
-  ComponentMapper<Tile> tileMapper;
-  ComponentMapper<Transform> tm;
+  Mapper<Tile> tileMapper;
+  Mapper<Transform> tm;
   TagManager tagManager;
   TileManager tileManager;
   GameManager gameManager;
@@ -56,8 +56,8 @@ class TileRenderingSystem extends EntityProcessingSystem {
 
   @override
   void processEntity(Entity entity) {
-    var tile = tileMapper.get(entity);
-    var t = tm.get(entity);
+    var tile = tileMapper[entity];
+    var t = tm[entity];
     factionTileMasks.forEach((faction, canvas) {
       if (faction == tile.faction) {
         canvas.context2D.fillRect(t.x, t.y, 1, 1);
@@ -73,7 +73,7 @@ class TileRenderingSystem extends EntityProcessingSystem {
   @override
   void end() {
     var cameraEntity = tagManager.getEntity('camera');
-    var cameraTransform = tm.get(cameraEntity);
+    var cameraTransform = tm[cameraEntity];
     var cameraRect = new Rectangle(cameraTransform.x, cameraTransform.y, 800, 600);
     if (changes) {
       changes = false;

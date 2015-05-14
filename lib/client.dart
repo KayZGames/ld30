@@ -9,21 +9,6 @@ export 'package:ld30/shared.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 export 'package:gamedev_helpers/gamedev_helpers.dart';
 
-@MirrorsUsed(targets: const [RenderingSystem, InputHandlingSystem,
-                             TileRenderingSystem, BufferToCanvasRenderingSystem,
-                             SelectionRenderingSystem,
-                             AttackerSystem, DefenderSystem, MovementSystem,
-                             KilledInActionSystem, UnitManager, UnitStatusRenderingSystem,
-                             SpawnerManager, TurnManager, AiSystem, ConquerableUnitSystem,
-                             MinimapRenderingSystem, FogOfWarRenderingSystem,
-                             FogOfWarManager, MenuScreenRenderingSystem,
-                             TurnMessageRenderingSystem, TileManager, GameManager,
-                             GameOverRenderingSystem
-
-//                             DebugInfluenceRenderingSsystem
-                            ])
-import 'dart:mirrors';
-
 //part 'src/client/systems/name.dart';
 part 'src/client/systems/tile_rendering_system.dart';
 part 'src/client/systems/unit_status_rendering_system.dart';
@@ -46,40 +31,42 @@ class Game extends GameBase {
       GameManager gameManager = world.getManager(GameManager);
       buffer.width = gameManager.sizeX * TILE_SIZE;
       buffer.height = gameManager.sizeY * TILE_SIZE;
-      buffer.context2D..textBaseline = "top"
-                      ..font = '12px Verdana';
+      buffer.context2D
+        ..textBaseline = "top"
+        ..font = '12px Verdana';
     });
   }
 
   void createEntities() {}
 
-  List<EntitySystem> getSystems() {
-    return [
-            new TweeningSystem(),
-            new MovementSystem(),
-            new AttackerSystem(),
-            new DefenderSystem(),
-            new ConquerableUnitSystem(),
-
-            new InputHandlingSystem(),
-            new AiSystem(),
-
-            new CanvasCleaningSystem(canvas),
-            new TileRenderingSystem(buffer.context2D, spriteSheet),
-            new UnitStatusRenderingSystem(buffer.context2D),
-            new RenderingSystem(buffer.context2D, spriteSheet),
-            new FogOfWarRenderingSystem(buffer.context2D),
+  Map<int, List<EntitySystem>> getSystems() {
+    return {
+      0: [
+        new CanvasCleaningSystem(canvas),
+        new TileRenderingSystem(buffer.context2D, spriteSheet),
+        new UnitStatusRenderingSystem(buffer.context2D),
+        new RenderingSystem(buffer.context2D, spriteSheet),
+        new FogOfWarRenderingSystem(buffer.context2D),
 //            new DebugInfluenceRenderingSsystem(buffer.context2D),
-            new SelectionRenderingSystem(buffer.context2D, spriteSheet),
-            new BufferToCanvasRenderingSystem(ctx, buffer),
-            new MinimapRenderingSystem(ctx),
-            new TurnMessageRenderingSystem(ctx),
-            new MenuScreenRenderingSystem(ctx),
-            new GameOverRenderingSystem(ctx),
-
-            new KilledInActionSystem(),
-            new AnalyticsSystem(AnalyticsSystem.GITHUB, 'ld30-postcompo')
-    ];
+        new SelectionRenderingSystem(buffer.context2D, spriteSheet),
+        new BufferToCanvasRenderingSystem(ctx, buffer),
+        new MinimapRenderingSystem(ctx),
+        new TurnMessageRenderingSystem(ctx),
+        new MenuScreenRenderingSystem(ctx),
+        new GameOverRenderingSystem(ctx),
+      ],
+      1: [
+        new TweeningSystem(),
+        new MovementSystem(),
+        new AttackerSystem(),
+        new DefenderSystem(),
+        new ConquerableUnitSystem(),
+        new InputHandlingSystem(),
+        new AiSystem(),
+        new KilledInActionSystem(),
+        new AnalyticsSystem(AnalyticsSystem.GITHUB, 'ld30-postcompo')
+      ]
+    };
   }
 
   @override
@@ -93,7 +80,6 @@ class Game extends GameBase {
     world.addManager(new GameManager());
     return super.onInit();
   }
-
 }
 
 // Dawnbringer 32 palette
@@ -131,7 +117,6 @@ class Colors {
   static const RAIN_FOREST = "#8f974a";
   static const STINGER = "#8a6f30";
 
-
   static const MENU_BACKGROUND = Colors.RAIN_FOREST;
   static const MENU_BORDER = Colors.DEEP_KOAMARU;
   static const MENU_LABEL = Colors.OPAL;
@@ -142,4 +127,3 @@ class Colors {
   static const MENU_BUTTON_HIGHLIGHTED = Colors.ATLANTIS;
   static const MENU_BUTTON_SELECTED_HIGHLIGHTED = Colors.ELF_GREEN;
 }
-

@@ -15,7 +15,7 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
                                     KeyCode.NUM_EIGHT: [ 0, -1],
                                     KeyCode.NUM_NINE:  [ 1, -1],
                                    };
-  ComponentMapper<Transform> tm;
+  Mapper<Transform> tm;
   UnitManager unitManager;
   TurnManager turnManager;
   GameManager gameManager;
@@ -58,14 +58,14 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
     } else if (keyState[KeyCode.RIGHT] == true) {
       x = TILE_SIZE ~/ 4;
     }
-    var t = tm.get(entity);
+    var t = tm[entity];
     t.x += x;
     t.y += y;
     if (gameManager.currentFaction == gameManager.playerFaction) {
       if (keyState[KeyCode.N] == true) {
         var moveableUnit = unitManager.getNextUnit(gameManager.playerFaction);
         if (null != moveableUnit) {
-          var unitTransform = tm.get(moveableUnit);
+          var unitTransform = tm[moveableUnit];
           t.x = unitTransform.x * TILE_SIZE - 400;
           t.y = unitTransform.y * TILE_SIZE - 300;
           moveableUnit..addComponent(new Selected())
@@ -103,7 +103,6 @@ class InputHandlingSystem extends GenericInputHandlingSystem {
   }
 
   void moveUnit(Entity entity, int keyCode) {
-    var selectedTransform = tm.get(entity);
     var direction = directions[keyCode];
     entity..addComponent(new Move(direction[0], direction[1]))
           ..changedInWorld();
